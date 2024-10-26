@@ -14,6 +14,7 @@ S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\utils\Random.java
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\test\tukano\clients\rest\RestShortsClient.java
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\tukano\api\Result.java
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\utils\Hibernate.java
+S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\main\MainApplication.java
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\tukano\impl\rest\TukanoRestServer.java
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\utils\IP.java
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\utils\JSON.java
@@ -38,6 +39,7 @@ S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\tukano\api\rest\RestBlobs
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\tukano\impl\JavaBlobs.java
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\tukano\impl\data\Following.java
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\tukano\impl\rest\RestBlobsResource.java
+S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\resources\BlobsResources.java
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\utils\Hash.java
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\utils\Hex.java
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\tukano\impl\rest\RestShortsResource.java

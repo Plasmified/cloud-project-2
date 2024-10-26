@@ -9,3 +9,7 @@ scc2425-tukano/target/original-tukano-1.war
 scc2425-tukano/.settings/org.eclipse.core.resources.prefs
 scc2425-tukano/dependency-reduced-pom.xml
 scc2425-tukano/.settings/org.eclipse.core.resources.prefs
+scc2425-tukano/target/tukano-1/WEB-INF/web.xml
+scc2425-tukano/target/tukano-1.war
+scc2425-tukano/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+scc2425-tukano/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst

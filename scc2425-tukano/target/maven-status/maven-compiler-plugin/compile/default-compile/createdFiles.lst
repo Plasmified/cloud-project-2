@@ -21,6 +21,7 @@ utils\Hibernate.class
 tukano\impl\storage\BlobStorage.class
 tukano\api\OkResult.class
 tukano\api\Shorts.class
+resources\BlobsResources.class
 tukano\azure\BlobStorageImpl.class
 tukano\impl\rest\utils\GenericExceptionMapper.class
 tukano\api\Blobs.class
@@ -48,6 +49,7 @@ utils\TryCatch$ThrowableSupplier.class
 tukano\clients\rest\RestShortsClient$1.class
 utils\JSON.class
 tukano\clients\rest\RestShortsClient$4.class
+main\MainApplication.class
 tukano\api\Short.class
 tukano\impl\rest\RestShortsResource.class
 tukano\impl\rest\RestUsersResource.class
