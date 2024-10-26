@@ -1,2 +1,11 @@
 
 *.class
+scc2425-tukano/target/tukano-1.war
+scc2425-tukano/target/tomcat/logs/access_log.2024-10-26
+scc2425-tukano/target/tomcat/conf/web.xml
+scc2425-tukano/target/tomcat/conf/tomcat-users.xml
+scc2425-tukano/target/tomcat/conf/logging.properties
+scc2425-tukano/target/original-tukano-1.war
+scc2425-tukano/.settings/org.eclipse.core.resources.prefs
+scc2425-tukano/dependency-reduced-pom.xml
+scc2425-tukano/.settings/org.eclipse.core.resources.prefs

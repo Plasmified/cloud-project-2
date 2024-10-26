@@ -23,6 +23,7 @@ S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\tukano\impl\rest\RestReso
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\tukano\impl\rest\utils\CustomLoggingFilter.java
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\tukano\impl\storage\FilesystemStorage.java
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\utils\Args.java
+S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\tukano\azure\BlobStorageImpl.java
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\utils\TryCatch.java
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\utils\IO.java
 S:\GitHub\cloud-project-1\scc2425-tukano\src\main\java\utils\Props.java

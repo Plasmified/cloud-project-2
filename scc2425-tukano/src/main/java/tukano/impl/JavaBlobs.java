@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import tukano.api.Blobs;
 import tukano.api.Result;
+import tukano.azure.BlobStorageImpl;
 import tukano.impl.rest.TukanoRestServer;
 import tukano.impl.storage.BlobStorage;
 import tukano.impl.storage.FilesystemStorage;
@@ -20,6 +21,7 @@ public class JavaBlobs implements Blobs {
 	private static Logger Log = Logger.getLogger(JavaBlobs.class.getName());
 
 	public String baseURI;
+	private BlobStorageImpl azureStorage;
 	private BlobStorage storage;
 	
 	synchronized public static Blobs getInstance() {
@@ -40,7 +42,14 @@ public class JavaBlobs implements Blobs {
 		if (!validBlobId(blobId, token))
 			return error(FORBIDDEN);
 
-		return storage.write( toPath( blobId ), bytes);
+		// Verificar isto, solucao temporaria para usar ao Storage.
+		try {
+			azureStorage.UploadToBlobStorage(blobId, bytes);
+
+			return storage.write( toPath( blobId ), bytes);
+		} catch (Exception e) {
+			return error(FORBIDDEN);
+		}
 	}
 
 	@Override
@@ -50,7 +59,13 @@ public class JavaBlobs implements Blobs {
 		if( ! validBlobId( blobId, token ) )
 			return error(FORBIDDEN);
 
-		return storage.read( toPath( blobId ) );
+		Result<byte[]> res = storage.read( toPath( blobId ) );
+
+		// Verificar isto, solucao temporaria para usar ao Storage.
+		if (azureStorage.DownloadFromBlobStorage(blobId) != res.value())
+			return error(FORBIDDEN);
+
+		return res;
 	}
 
 	@Override

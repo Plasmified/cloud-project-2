@@ -21,6 +21,7 @@ utils\Hibernate.class
 tukano\impl\storage\BlobStorage.class
 tukano\api\OkResult.class
 tukano\api\Shorts.class
+tukano\azure\BlobStorageImpl.class
 tukano\impl\rest\utils\GenericExceptionMapper.class
 tukano\api\Blobs.class
 tukano\api\Result.class
