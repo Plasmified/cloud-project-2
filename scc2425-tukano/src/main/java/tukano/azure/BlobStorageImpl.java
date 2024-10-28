@@ -22,7 +22,7 @@ public class BlobStorageImpl {
 
 			BlobClient blob = containerClient.getBlobClient(blobId);
 
-			blob.upload(data);
+			blob.upload(data, true);
 			
 		} catch( Exception e) {
 			e.printStackTrace();

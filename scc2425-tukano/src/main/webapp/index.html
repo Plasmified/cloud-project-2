@@ -1,97 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Endpoint Links</title>
-    <style>
-        /* Basic reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        /* Body styling */
-        body {
-            background-color: #ccffcc; /* Light green */
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* Top menu styling */
-        .top-menu {
-            background-color: #006400; /* Darker green */
-            width: 100%;
-            padding: 10px 0;
-            display: flex;
-            justify-content: center;
-        }
-
-        .menu-button {
-            color: white;
-            background-color: #004d00; /* Slightly darker green */
-            border: none;
-            padding: 10px 20px;
-            margin: 0 5px;
-            cursor: pointer;
-            font-size: 16px;
-            border-radius: 5px;
-        }
-
-        .menu-button:hover {
-            background-color: #003300; /* Even darker on hover */
-        }
-
-        /* Link list styling */
-        .link-container {
-            margin: 20px;
-            padding: 20px;
-            width: 80%;
-            max-width: 600px;
-            background-color: #e0ffe0; /* Very light green */
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .link-row {
-            margin: 10px 0;
-            padding: 10px;
-            background-color: #b3ffb3; /* Light green */
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        .link-row a {
-            color: #006400; /* Dark green for text */
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .link-row a:hover {
-            text-decoration: underline;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tukano - The Shorts Network !</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="main-page">
+  <header>
+    <div class="logo">Tukano</div>
+    <nav>
+      <a href="login.html" class="btn">Login</a>
+      <a href="register.html" class="btn">Register</a>
+    </nav>
+  </header>
 
-    <!-- Top Menu -->
-    <div class="top-menu">
-        <button class="menu-button">Home</button>
-        <button class="menu-button">API Docs</button>
-        <button class="menu-button">Support</button>
-        <button class="menu-button">About</button>
-    </div>
+  <main>
+    <h1>Connect with Tukano, Connect with Friends</h1>
+    <p>The Shorts social network starts here.</p>
+    <a href="register.html" class="cta-btn">Join Now</a>
+  </main>
 
-    <!-- Link Container -->
-    <div class="link-container">
-        <div class="link-row"><a href="/rest/blobs">/rest/blobs</a></div>
-        <div class="link-row"><a href="/rest/users">/rest/users</a></div>
-        <div class="link-row"><a href="/rest/shorts">/rest/shorts</a></div>
-        <div class="link-row"><a href="/rest/blobs/test">Test !</a></div>
-    </div>
-
+  <footer>
+    <a href="#">About</a> | <a href="#">Privacy Policy</a> | <a href="#">Contact</a> | <a href="#">Help</a>
+  </footer>
 </body>
 </html>

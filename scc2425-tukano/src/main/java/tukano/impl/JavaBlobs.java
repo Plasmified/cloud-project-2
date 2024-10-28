@@ -3,6 +3,8 @@ package tukano.impl;
 import static java.lang.String.format;
 import static tukano.api.Result.error;
 import static tukano.api.Result.ErrorCode.FORBIDDEN;
+import static tukano.api.Result.ErrorCode.INTERNAL_ERROR;
+import static tukano.api.Result.ErrorCode.NOT_FOUND;
 
 import java.util.logging.Logger;
 
@@ -39,8 +41,8 @@ public class JavaBlobs implements Blobs {
 	public Result<Void> upload(String blobId, byte[] bytes, String token) {
 		Log.info(() -> format("upload : blobId = %s, sha256 = %s, token = %s\n", blobId, Hex.of(Hash.sha256(bytes)), token));
 
-		if (!validBlobId(blobId, token))
-			return error(FORBIDDEN);
+		//if (!validBlobId(blobId, token))
+			//return error(FORBIDDEN);
 
 		// Verificar isto, solucao temporaria para usar ao Storage.
 		try {
@@ -48,7 +50,7 @@ public class JavaBlobs implements Blobs {
 
 			return storage.write( toPath( blobId ), bytes);
 		} catch (Exception e) {
-			return error(FORBIDDEN);
+			return error(INTERNAL_ERROR);
 		}
 	}
 

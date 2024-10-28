@@ -33,6 +33,7 @@ utils\IP.class
 tukano\impl\rest\RestBlobsResource.class
 tukano\clients\rest\RestShortsClient$2.class
 utils\Queues.class
+resources\ShortsResources.class
 tukano\api\rest\RestShorts.class
 tukano\api\Result$ErrorCode.class
 tukano\clients\rest\RestUsersClient$1.class
@@ -47,6 +48,7 @@ tukano\api\ErrorResult.class
 tukano\clients\rest\RestBlobsClient.class
 utils\TryCatch$ThrowableSupplier.class
 tukano\clients\rest\RestShortsClient$1.class
+resources\UsersResources.class
 utils\JSON.class
 tukano\clients\rest\RestShortsClient$4.class
 main\MainApplication.class

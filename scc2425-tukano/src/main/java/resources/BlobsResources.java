@@ -7,6 +7,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import tukano.azure.BlobStorageImpl;
 import tukano.impl.rest.RestBlobsResource;
 
 @Path("/blobs")
@@ -15,13 +16,20 @@ public class BlobsResources {
     public final String BLOB_ID = "blobId";
 	public final String TOKEN = "token";
     RestBlobsResource rbs = new RestBlobsResource();
+    BlobStorageImpl bsi = new BlobStorageImpl();
     
 
     @POST
  	@Path("/{" + BLOB_ID +"}")
  	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
-    public void uploadBlob(@PathParam(BLOB_ID) String blobId, byte[] bytes, @QueryParam(TOKEN) String token) {
-        rbs.upload(blobId, bytes, token);
+    public String uploadBlob(@PathParam(BLOB_ID) String blobId, byte[] bytes, @QueryParam(TOKEN) String token) {
+        //rbs.upload(blobId, bytes, token);
+        try {
+            bsi.UploadToBlobStorage(blobId, bytes);
+            return "Success";
+        } catch (Exception e) {
+            return e.getMessage();
+        }
     }
 
     @GET
