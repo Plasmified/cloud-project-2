@@ -6,11 +6,15 @@ import static tukano.api.Result.ErrorCode.FORBIDDEN;
 import static tukano.api.Result.ErrorCode.INTERNAL_ERROR;
 import static tukano.api.Result.ErrorCode.NOT_FOUND;
 
+import java.util.Base64;
 import java.util.logging.Logger;
+
+import com.codahale.metrics.MetricRegistryListener.Base;
 
 import tukano.api.Blobs;
 import tukano.api.Result;
 import tukano.azure.BlobStorageImpl;
+import tukano.impl.cache.RedisCache;
 import tukano.impl.rest.TukanoRestServer;
 import tukano.impl.storage.BlobStorage;
 import tukano.impl.storage.FilesystemStorage;
@@ -44,14 +48,26 @@ public class JavaBlobs implements Blobs {
 		//if (!validBlobId(blobId, token))
 			//return error(FORBIDDEN);
 
-		// Verificar isto, solucao temporaria para usar ao Storage.
 		try {
+
+			//Tentar guardar na cache redis antes de guardar na blob storage
+			try (var jedis = RedisCache.getCachePool().getResource()) {
+				var key = "blob:" + blobId;
+				// Converter byte[] para String porque Redis nao suporta byte[]
+				String value = Base64.getEncoder().encodeToString(bytes);
+				jedis.set(key, value);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+
 			azureStorage.UploadToBlobStorage(blobId, bytes);
 
 			return storage.write( toPath( blobId ), bytes);
 		} catch (Exception e) {
 			return error(INTERNAL_ERROR);
 		}
+
+		
 	}
 
 	@Override
@@ -61,13 +77,39 @@ public class JavaBlobs implements Blobs {
 		if( ! validBlobId( blobId, token ) )
 			return error(FORBIDDEN);
 
-		Result<byte[]> res = storage.read( toPath( blobId ) );
+		// // Verificar isto, solucao temporaria para usar ao Storage.
+		// if (azureStorage.DownloadFromBlobStorage(blobId) != res.value())
+		// 	return error(FORBIDDEN);
+		
+		//Ver primeiro se o Blob está em cache
+		try( var jedis = RedisCache.getCachePool().getResource()) {
+			var key = "blob:" + blobId;
+			String value = jedis.get(key);
+			if( value != null ) {
+				// voltar a converter de string para byte[]
+				byte [] bytes = Base64.getDecoder().decode(value);
+				return Result.ok(bytes);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 
-		// Verificar isto, solucao temporaria para usar ao Storage.
-		if (azureStorage.DownloadFromBlobStorage(blobId) != res.value())
-			return error(FORBIDDEN);
+		// Se não estiver no cache, ir buscar ao blob storage
+		byte[] res = azureStorage.DownloadFromBlobStorage(blobId);
+		if (res == null) {
+			return error(NOT_FOUND);
+		}
 
-		return res;
+		// Armazenar o blob recuperado (que não estava em cache) no cache redis
+		try (var jedis = RedisCache.getCachePool().getResource()) {
+			var key = "blob:" + blobId;
+			String value = Base64.getEncoder().encodeToString(res);
+			jedis.set(key, value);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+    	return Result.ok(res);
 	}
 
 	@Override
@@ -76,6 +118,14 @@ public class JavaBlobs implements Blobs {
 	
 		if( ! validBlobId( blobId, token ) )
 			return error(FORBIDDEN);
+
+		// remover blob do cache redis
+		try (var jedis = RedisCache.getCachePool().getResource()) {
+			var key = "blob:" + blobId;
+			jedis.del(key);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		return storage.delete( toPath(blobId));
 	}
@@ -87,7 +137,25 @@ public class JavaBlobs implements Blobs {
 		if( ! Token.isValid( token, userId ) )
 			return error(FORBIDDEN);
 		
-		return storage.delete( toPath(userId));
+		//REVER IMPLEMENTAÇÃO DO DELETEALL BLOBS -> por causa do toPath() que recebe um blobID e estamos a manda rum UserID
+		// try (var jedis = RedisCache.getCachePool().getResource()) {
+		// 	// Tenho de, com a userId, conseguir ir buscar a lista de blobs e respetivas chaves
+		// 	var keys = jedis.keys(??);
+		// 	// Para cada blob encontrado, apaga da cache e do armazenamento
+		// 	for (String key : keys) {
+		// 		// Remove o blob da cache Redis
+		// 		jedis.del(key);
+	
+		// 		// Extrai o blobId da chave e remove-o do armazenamento
+		// 		String blobId = key.substring(("blob:" + userId + ":").length());
+		// 		storage.delete(toPath(blobId));
+		// 	}
+		// } catch (Exception e) {
+		// 	e.printStackTrace();
+		// 	return error(INTERNAL_ERROR);
+		// }
+
+		return storage.delete(toPath(userId));
 	}
 	
 	private boolean validBlobId(String blobId, String token) {		

@@ -13,14 +13,18 @@ import com.azure.cosmos.models.CosmosItemRequestOptions;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 
+// Ficheiro onde temos as keys para ser mais fácil de testar tudo
+import main.KeysRecord;
+
 import tukano.api.Result;
 
 
 public class Cosmos {
-    private static final String CONNECTION_URL = "https://sc2425smd.documents.azure.com:443/"; // replace with your own
-	private static final String DB_KEY = "s4kZfLOhVrkLPvIHXtPNgw8MShc7ttCdExTh4ga8WwYqxMoGLP7qWW1sKlQKwZk6hcliXrj3NS13ACDbjROLQA==";
-	private static final String DB_NAME = "scc2425lab3";
-	private static final String CONTAINER = "users";
+
+	private static final String CONNECTION_URL = KeysRecord.CONNECTION_URL;
+	private static final String DB_KEY = KeysRecord.DB_KEY;
+	private static final String DB_NAME = KeysRecord.DB_NAME;
+	private static final String CONTAINER = KeysRecord.CONTAINER;
 	
 	private static Cosmos instance;
 
