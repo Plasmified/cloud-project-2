@@ -7,8 +7,8 @@ public record KeysRecord() {
     public static final String REDIS_KEYS = "copiar aqui a chave da Redis";
 
     //Cosmos.java
-    public static final String CONNECTION_URL = "https://sc2425smd.documents.azure.com:443/"; // replace with your own
-	public static final String DB_KEY = "s4kZfLOhVrkLPvIHXtPNgw8MShc7ttCdExTh4ga8WwYqxMoGLP7qWW1sKlQKwZk6hcliXrj3NS13ACDbjROLQA==";
-	public static final String DB_NAME = "scc2425lab3";
-	public static final String CONTAINER = "users";
+    public static final String CONNECTION_URL = "https://scc-proj1.documents.azure.com:443/"; // replace with your own
+	public static final String DB_KEY = "w3tOJjGl3InY65zrBqBtWmjAm5SUwuIMewkbdR2ViXhbWQ6AbmfcqRI2LUzVGnUVqwjzT7TPRKnLACDbqPKnfw==";
+	public static final String DB_NAME = "users";
+	public static final String CONTAINER = "user";
 }

@@ -1,5 +1,6 @@
 utils\Sleep.class
 tukano\clients\rest\RestUsersClient.class
+main\KeysRecord.class
 tukano\impl\rest\RestResource$1.class
 tukano\impl\Token.class
 tukano\clients\rest\RestClient.class
@@ -8,10 +9,12 @@ utils\Random.class
 utils\TLS.class
 tukano\impl\rest\RestResource.class
 tukano\api\Users.class
+tukano\impl\cache\RedisCache.class
 tukano\impl\JavaShorts.class
 tukano\impl\JavaBlobs.class
 tukano\api\User.class
 tukano\api\rest\RestUsers.class
+utils\Cosmos.class
 tukano\impl\JavaUsers.class
 utils\DB.class
 tukano\clients\rest\RestShortsClient$3.class
@@ -21,7 +24,6 @@ utils\Hibernate.class
 tukano\impl\storage\BlobStorage.class
 tukano\api\OkResult.class
 tukano\api\Shorts.class
-resources\BlobsResources.class
 tukano\azure\BlobStorageImpl.class
 tukano\impl\rest\utils\GenericExceptionMapper.class
 tukano\api\Blobs.class
@@ -33,7 +35,6 @@ utils\IP.class
 tukano\impl\rest\RestBlobsResource.class
 tukano\clients\rest\RestShortsClient$2.class
 utils\Queues.class
-resources\ShortsResources.class
 tukano\api\rest\RestShorts.class
 tukano\api\Result$ErrorCode.class
 tukano\clients\rest\RestUsersClient$1.class
@@ -41,6 +42,7 @@ tukano\impl\data\Likes.class
 utils\TryCatch.class
 utils\Hex.class
 tukano\api\rest\RestBlobs.class
+tukano\impl\rest\MainApplication.class
 test\Test.class
 utils\IO.class
 tukano\impl\storage\FilesystemStorage.class
@@ -48,10 +50,8 @@ tukano\api\ErrorResult.class
 tukano\clients\rest\RestBlobsClient.class
 utils\TryCatch$ThrowableSupplier.class
 tukano\clients\rest\RestShortsClient$1.class
-resources\UsersResources.class
 utils\JSON.class
 tukano\clients\rest\RestShortsClient$4.class
-main\MainApplication.class
 tukano\api\Short.class
 tukano\impl\rest\RestShortsResource.class
 tukano\impl\rest\RestUsersResource.class

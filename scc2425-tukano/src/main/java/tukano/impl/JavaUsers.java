@@ -33,6 +33,7 @@ public class JavaUsers implements Users {
 	
 	@Override
 	public Result<String> createUser(User user) {
+		
 		Log.info(() -> format("createUser : %s\n", user));
 
 		if( badUserInfo( user ) )
