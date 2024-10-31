@@ -9,8 +9,6 @@ import static tukano.api.Result.ErrorCode.NOT_FOUND;
 import java.util.Base64;
 import java.util.logging.Logger;
 
-import com.codahale.metrics.MetricRegistryListener.Base;
-
 import tukano.api.Blobs;
 import tukano.api.Result;
 import tukano.azure.BlobStorageImpl;
@@ -45,8 +43,8 @@ public class JavaBlobs implements Blobs {
 	public Result<Void> upload(String blobId, byte[] bytes, String token) {
 		Log.info(() -> format("upload : blobId = %s, sha256 = %s, token = %s\n", blobId, Hex.of(Hash.sha256(bytes)), token));
 
-		//if (!validBlobId(blobId, token))
-			//return error(FORBIDDEN);
+		if (!validBlobId(blobId, token))
+			return error(FORBIDDEN);
 
 		try {
 

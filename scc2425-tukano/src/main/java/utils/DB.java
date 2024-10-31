@@ -30,6 +30,10 @@ public class DB {
 		return Hibernate.getInstance().updateOne(obj);
 	}
 	
+	public static <T> Result<T> insertOneCosmos( T obj) {
+		return Cosmos.getInstance().insertOne(obj);
+	}
+
 	public static <T> Result<T> insertOne( T obj) {
 		return Result.errorOrValue(Hibernate.getInstance().persistOne(obj), obj);
 	}

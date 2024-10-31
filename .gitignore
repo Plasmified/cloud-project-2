@@ -14,3 +14,4 @@ scc2425-tukano/target/tukano-1.war
 scc2425-tukano/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
 scc2425-tukano/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
 /scc2425-tukano/target
+*.lst

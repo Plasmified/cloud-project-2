@@ -1,7 +1,10 @@
 package utils;
 
+import static java.lang.String.format;
+
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 
 import com.azure.cosmos.ConsistencyLevel;
 import com.azure.cosmos.CosmosClient;
@@ -18,7 +21,6 @@ import main.KeysRecord;
 
 import tukano.api.Result;
 
-
 public class Cosmos {
 
 	private static final String CONNECTION_URL = KeysRecord.CONNECTION_URL;
@@ -27,6 +29,8 @@ public class Cosmos {
 	private static final String CONTAINER = KeysRecord.CONTAINER;
 	
 	private static Cosmos instance;
+
+	private static Logger Log = Logger.getLogger(Cosmos.class.getName());
 
 	public static synchronized Cosmos getInstance() {
 		if( instance != null)
@@ -95,9 +99,11 @@ public class Cosmos {
 			return Result.ok(supplierFunc.get());			
 		} catch( CosmosException ce ) {
 			//ce.printStackTrace();
+			Log.info(() -> format("COSMOS : %s\n", ce.getMessage()));
 			return Result.error ( errorCodeFromStatus(ce.getStatusCode() ));		
 		} catch( Exception x ) {
-			x.printStackTrace();
+			//x.printStackTrace();
+			Log.info(() -> format("COSMOS : %s\n", x.getMessage()));
 			return Result.error( Result.ErrorCode.INTERNAL_ERROR);						
 		}
 	}
