@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+import main.KeysRecord;
 import tukano.api.Result;
 import tukano.api.User;
 import tukano.api.Users;
@@ -22,6 +23,8 @@ public class JavaUsers implements Users {
 	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
 
 	private static Users instance;
+
+	private DB dbAccess = new DB(KeysRecord.USERSMODE, "users", "user");
 	
 	synchronized public static Users getInstance() {
 		if( instance == null )
@@ -39,7 +42,7 @@ public class JavaUsers implements Users {
 		if( badUserInfo( user ) )
 				return error(BAD_REQUEST);
 
-		return errorOrValue( DB.insertOneCosmos( user), user.getId() );
+		return errorOrValue( dbAccess.insertOne( user), user.getId() );
 	}
 
 	@Override
@@ -49,7 +52,7 @@ public class JavaUsers implements Users {
 		if (userId == null)
 			return error(BAD_REQUEST);
 		
-		return validatedUserOrError( DB.getOne( userId, User.class), pwd);
+		return validatedUserOrError( dbAccess.getOne( userId, User.class), pwd);
 	}
 
 	@Override
@@ -59,7 +62,7 @@ public class JavaUsers implements Users {
 		if (badUpdateUserInfo(userId, pwd, other))
 			return error(BAD_REQUEST);
 
-		return errorOrResult( validatedUserOrError(DB.getOne( userId, User.class), pwd), user -> DB.updateOne( user.updateFrom(other)));
+		return errorOrResult( validatedUserOrError(dbAccess.getOne( userId, User.class), pwd), user -> dbAccess.updateOne( user.updateFrom(other)));
 	}
 
 	@Override
@@ -69,7 +72,7 @@ public class JavaUsers implements Users {
 		if (userId == null || pwd == null )
 			return error(BAD_REQUEST);
 
-		return errorOrResult( validatedUserOrError(DB.getOne( userId, User.class), pwd), user -> {
+		return errorOrResult( validatedUserOrError(dbAccess.getOne( userId, User.class), pwd), user -> {
 
 			// Delete user shorts and related info asynchronously in a separate thread
 			Executors.defaultThreadFactory().newThread( () -> {
@@ -77,7 +80,7 @@ public class JavaUsers implements Users {
 				JavaBlobs.getInstance().deleteAllBlobs(userId, Token.get(userId));
 			}).start();
 			
-			return DB.deleteOne( user);
+			return dbAccess.deleteOne( user);
 		});
 	}
 
@@ -86,7 +89,7 @@ public class JavaUsers implements Users {
 		Log.info( () -> format("searchUsers : patterns = %s\n", pattern));
 
 		var query = format("SELECT * FROM User u WHERE UPPER(u.userId) LIKE '%%%s%%'", pattern.toUpperCase());
-		var hits = DB.sql(query, User.class)
+		var hits = dbAccess.sql(query, User.class)
 				.stream()
 				.map(User::copyWithoutPassword)
 				.toList();

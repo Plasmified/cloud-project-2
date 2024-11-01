@@ -34,6 +34,7 @@ utils\Args.class
 utils\IP.class
 tukano\impl\rest\RestBlobsResource.class
 tukano\clients\rest\RestShortsClient$2.class
+tukano\api\UserDAO.class
 utils\Queues.class
 tukano\api\rest\RestShorts.class
 tukano\api\Result$ErrorCode.class

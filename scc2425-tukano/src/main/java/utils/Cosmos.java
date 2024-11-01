@@ -25,14 +25,16 @@ public class Cosmos {
 
 	private static final String CONNECTION_URL = KeysRecord.CONNECTION_URL;
 	private static final String DB_KEY = KeysRecord.DB_KEY;
-	private static final String DB_NAME = KeysRecord.DB_NAME;
-	private static final String CONTAINER = KeysRecord.CONTAINER;
+	private static String DB_NAME = KeysRecord.DB_NAME;
+	private static String CONTAINER = KeysRecord.CONTAINER;
 	
 	private static Cosmos instance;
 
 	private static Logger Log = Logger.getLogger(Cosmos.class.getName());
 
-	public static synchronized Cosmos getInstance() {
+	public static synchronized Cosmos getInstance(String dbname, String dbcontainer) {
+		DB_NAME = dbname;
+		CONTAINER = dbcontainer;
 		if( instance != null)
 			return instance;
 

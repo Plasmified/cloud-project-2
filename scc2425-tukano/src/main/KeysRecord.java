@@ -11,4 +11,7 @@ public record KeysRecord() {
 	public static final String DB_KEY = "w3tOJjGl3InY65zrBqBtWmjAm5SUwuIMewkbdR2ViXhbWQ6AbmfcqRI2LUzVGnUVqwjzT7TPRKnLACDbqPKnfw==";
 	public static final String DB_NAME = "users";
 	public static final String CONTAINER = "user";
+
+    public static final String USERSMODE = "COSMOS";
+    public static final String SHORTSMODE = "POSTGRESQL";
 }
