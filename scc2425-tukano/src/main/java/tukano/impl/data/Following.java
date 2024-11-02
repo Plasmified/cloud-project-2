@@ -12,14 +12,14 @@ public class Following{
 	String follower;
 	
 	@Id 
-	String followee;
+	String id;
 
 	Following() {}
 
-	public Following(String follower, String followee) {
+	public Following(String follower, String id) {
 		super();
 		this.follower = follower;
-		this.followee = followee;
+		this.id = id;
 	}
 
 	public String getFollower() {
@@ -30,17 +30,17 @@ public class Following{
 		this.follower = follower;
 	}
 
-	public String getFollowee() {
-		return followee;
+	public String getId() {
+		return id;
 	}
 
-	public void setFollowee(String followee) {
-		this.followee = followee;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(followee, follower);
+		return Objects.hash(id, follower);
 	}
 
 	@Override
@@ -52,12 +52,12 @@ public class Following{
 		if (getClass() != obj.getClass())
 			return false;
 		Following other = (Following) obj;
-		return Objects.equals(followee, other.followee) && Objects.equals(follower, other.follower);
+		return Objects.equals(id, other.id) && Objects.equals(follower, other.follower);
 	}
 
 	@Override
 	public String toString() {
-		return "Following [follower=" + follower + ", followee=" + followee + "]";
+		return "Following [follower=" + follower + ", followee=" + id + "]";
 	}
 	
 	

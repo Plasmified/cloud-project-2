@@ -13,5 +13,5 @@ public record KeysRecord() {
 	public static final String CONTAINER = "user";
 
     public static final String USERSMODE = "COSMOS";
-    public static final String SHORTSMODE = "POSTGRESQL";
+    public static final String SHORTSMODE = "COSMOS";
 }

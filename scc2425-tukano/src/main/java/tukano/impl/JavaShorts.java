@@ -6,10 +6,12 @@ import static tukano.api.Result.errorOrResult;
 import static tukano.api.Result.errorOrValue;
 import static tukano.api.Result.errorOrVoid;
 import static tukano.api.Result.ok;
-import static tukano.api.Result.ErrorCode.BAD_REQUEST;
 import static tukano.api.Result.ErrorCode.FORBIDDEN;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -42,14 +44,15 @@ public class JavaShorts implements Shorts {
 	
 	
 	@Override
-	public Result<Short> createShort(String userId, String password) {
-		Log.info(() -> format("createShort : userId = %s, pwd = %s\n", userId, password));
+	public Result<Short> createShort(String uid, String password) {
+		Log.info(() -> format("createShort : id = %s, pwd = %s\n", uid, password));
 
-		return errorOrResult( okUser(userId, password), user -> {
+		return errorOrResult( okUser(uid, password), user -> {
+			Log.info(() -> format("createShort : GOT HERE %s !\n", dbAccess.dbcontainer));
 			
-			var shortId = format("%s+%s", userId, UUID.randomUUID());
-			var blobUrl = format("%s/%s/%s", TukanoRestServer.serverURI, Blobs.NAME, shortId); 
-			var shrt = new Short(shortId, userId, blobUrl);
+			var id = format("%s+%s", uid, UUID.randomUUID());
+			var blobUrl = format("%s/%s/%s", TukanoRestServer.serverURI, Blobs.NAME, id); 
+			var shrt = new Short(id, uid, blobUrl);
 
 			return errorOrValue(dbAccess.insertOne(shrt), s -> s.copyWithLikes_And_Token(0));
 		});
@@ -59,12 +62,20 @@ public class JavaShorts implements Shorts {
 	public Result<Short> getShort(String shortId) {
 		Log.info(() -> format("getShort : shortId = %s\n", shortId));
 
-		if( shortId == null )
-			return error(BAD_REQUEST);
-
-		var query = format("SELECT count(*) FROM Likes l WHERE l.shortId = '%s'", shortId);
-		var likes = dbAccess.sql(query, Long.class);
-		return errorOrValue( dbAccess.getOne(shortId, Short.class), shrt -> shrt.copyWithLikes_And_Token( likes.get(0)));
+		var queryLikes = format("SELECT COUNT(1) FROM likes l WHERE l.shortId = '%s'", shortId);
+		Result<List<Long>> likesResult = dbAccess.query(Long.class, queryLikes);
+	
+		Long likesCount = likesResult.isOK() && !likesResult.value().isEmpty() ? likesResult.value().get(0) : 0L;
+	
+		var queryShort = format("SELECT * FROM shorts WHERE shorts.id = '%s'", shortId);
+		Result<List<Short>> shortResult = dbAccess.query(Short.class, queryShort);
+	
+		if (shortResult.isOK() && !shortResult.value().isEmpty()) {
+			Short shrt = shortResult.value().get(0).copyWithLikes_And_Token(likesCount);
+			return Result.ok(shrt);
+		} else {
+			return Result.error(shortResult.error());
+		}
 	}
 
 	
@@ -76,20 +87,17 @@ public class JavaShorts implements Shorts {
 			
 			return errorOrResult(getShort(shortId), shrt -> {
 				return errorOrResult(okUser(shrt.getOwnerId(), password), user -> {
-					var query = format("SELECT * FROM c WHERE c.shortId = '%s'", shortId);
+					var query = format("SELECT * FROM likes WHERE likes.id = '%s'", shortId);
 					
-					// Fetch the list of Likes for the given shortId
 					List<Likes> lst = dbAccess.sql(query, Likes.class);
 					
 					for (Likes lk : lst) {
-						// Delete each Likes item and check for errors
 						var res = dbAccess.deleteOne(lk);
 						if (!res.isOK()) {
-							return Result.<Void>error(res.error()); // Ensure Result<Void> type
+							return Result.<Void>error(res.error());
 						}
 					}
 					
-					// Delete blob associated with shrt and return Result<Void>
 					return JavaBlobs.getInstance().delete(shrt.getBlobUrl(), Token.get());
 				});
 			});
@@ -115,8 +123,8 @@ public class JavaShorts implements Shorts {
 	public Result<List<String>> getShorts(String userId) {
 		Log.info(() -> format("getShorts : userId = %s\n", userId));
 
-		var query = format("SELECT s.shortId FROM Short s WHERE s.ownerId = '%s'", userId);
-		return errorOrValue( okUser(userId), dbAccess.sql( query, String.class));
+		var query = format("SELECT * FROM shorts s WHERE s.ownerId = '%s'", userId);
+		return errorOrValue( okUser(userId), dbAccess.sql( query, Short.class).stream().map(Short::getId).toList());
 	}
 
 	@Override
@@ -126,7 +134,7 @@ public class JavaShorts implements Shorts {
 		
 		return errorOrResult( okUser(userId1, password), user -> {
 			var f = new Following(userId1, userId2);
-			return errorOrVoid( okUser( userId2), isFollowing ? dbAccess.insertOne( f ) : dbAccess.deleteOne( f ));	
+			return errorOrVoid( okUser( userId2), isFollowing ? dbAccess.insertOneSpecific( f, "follows", "follow" ) : dbAccess.deleteOneSpecific( f, "follows", "follow" ));	
 		});			
 	}
 
@@ -134,8 +142,8 @@ public class JavaShorts implements Shorts {
 	public Result<List<String>> followers(String userId, String password) {
 		Log.info(() -> format("followers : userId = %s, pwd = %s\n", userId, password));
 
-		var query = format("SELECT f.follower FROM Following f WHERE f.followee = '%s'", userId);		
-		return errorOrValue( okUser(userId, password), dbAccess.sql(query, String.class));
+		var query = format("SELECT * FROM follows f WHERE f.id = '%s'", userId);	
+		return errorOrValue( okUser(userId, password), dbAccess.sqlSpecific(query, "follows", "follow", Following.class).stream().map(Following::getFollower).toList());
 	}
 
 	@Override
@@ -145,7 +153,7 @@ public class JavaShorts implements Shorts {
 		
 		return errorOrResult( getShort(shortId), shrt -> {
 			var l = new Likes(userId, shortId, shrt.getOwnerId());
-			return errorOrVoid( okUser( userId, password), isLiked ? dbAccess.insertOne( l ) : dbAccess.deleteOne( l ));	
+			return errorOrVoid( okUser( userId, password), isLiked ? dbAccess.insertOneSpecific( l, "likes", "like" ) : dbAccess.deleteOneSpecific( l, "likes", "like" ));	
 		});
 	}
 
@@ -155,9 +163,9 @@ public class JavaShorts implements Shorts {
 
 		return errorOrResult( getShort(shortId), shrt -> {
 			
-			var query = format("SELECT l.userId FROM Likes l WHERE l.shortId = '%s'", shortId);					
+			var query = format("SELECT * FROM likes l WHERE l.id = '%s'", shortId);
 			
-			return errorOrValue( okUser( shrt.getOwnerId(), password ), dbAccess.sql(query, String.class));
+			return errorOrValue( okUser( shrt.getOwnerId(), password ), dbAccess.sqlSpecific(query, "likes", "like", Likes.class).stream().map(Likes::getUserId).toList());
 		});
 	}
 
@@ -165,23 +173,38 @@ public class JavaShorts implements Shorts {
 	public Result<List<String>> getFeed(String userId, String password) {
 		Log.info(() -> format("getFeed : userId = %s, pwd = %s\n", userId, password));
 
-		final var QUERY_FMT = """
-				SELECT s.shortId, s.timestamp FROM Short s WHERE	s.ownerId = '%s'				
-				UNION			
-				SELECT s.shortId, s.timestamp FROM Short s, Following f 
-					WHERE 
-						f.followee = s.ownerId AND f.follower = '%s' 
-				ORDER BY s.timestamp DESC""";
+		final var QUERY_FMT_SHORTS = "SELECT * FROM shorts s WHERE s.ownerId = '%s'";
+		final var QUERY_FMT_FOLLOWING = "SELECT * FROM follows f WHERE f.follower = '%s'";
 
-		return errorOrValue( okUser( userId, password), dbAccess.sql( format(QUERY_FMT, userId, userId), String.class));		
+		var userShorts = dbAccess.sqlSpecific(format(QUERY_FMT_SHORTS, userId), "shorts", "short", Short.class).stream().toList();
+
+		var followerIds = dbAccess.sqlSpecific(format(QUERY_FMT_FOLLOWING, userId), "follows", "follow", Following.class).stream()
+								.map(Following::getId)
+								.toList();
+
+		List<Short> followerShorts = followerIds.stream().flatMap(followerId -> dbAccess.sqlSpecific(format(QUERY_FMT_SHORTS, followerId), "shorts", "short", Short.class).stream()).toList();
+
+		Map<Long, String> combinedShorts = new TreeMap<>();
+
+		for (Short s : userShorts) {
+			combinedShorts.put(s.getTimestamp(), s.getId());
+		}
+
+		for (Short s : followerShorts) {
+			combinedShorts.put(s.getTimestamp(), s.getId());
+		}
+
+		List<String> sortedShortIds = new ArrayList<>(combinedShorts.values());
+		
+		return errorOrValue(okUser(userId, password), sortedShortIds);
 	}
 		
-	protected Result<User> okUser( String userId, String pwd) {
-		return JavaUsers.getInstance().getUser(userId, pwd);
+	protected Result<User> okUser( String id, String pwd) {
+		return JavaUsers.getInstance().getUser(id, pwd);
 	}
 	
-	private Result<Void> okUser( String userId ) {
-		var res = okUser( userId, "");
+	private Result<Void> okUser( String id ) {
+		var res = okUser( id, "");
 		if( res.error() == FORBIDDEN )
 			return ok();
 		else
@@ -197,37 +220,30 @@ public class JavaShorts implements Shorts {
 		
 		if (dbAccess.mode.equals("COSMOS")) {
 
-			String query1 = format("SELECT * FROM c WHERE c.ownerId = '%s'", userId);
-			Result<List<Short>> shortsResult = dbAccess.query(Short.class, query1);
-			if (!shortsResult.isOK()) {
-				return Result.error(shortsResult.error());
-			}
-			for (Short s : shortsResult.value()) {
+			String query1 = format("SELECT * FROM shorts s WHERE s.ownerId = '%s'", userId);
+			List<Short> shortsResult = dbAccess.sqlSpecific(query1,"shorts","short",Short.class);
+			
+			for (Short s : shortsResult) {
 				var deleteResult = dbAccess.deleteOne(s);
 				if (!deleteResult.isOK()) {
 					return Result.error(deleteResult.error());
 				}
 			}
 
-			String query2 = format("SELECT * FROM c WHERE c.follower = '%s' OR c.followee = '%s'", userId, userId);
-			Result<List<Following>> followingResult = dbAccess.query(Following.class, query2);
-			if (!followingResult.isOK()) {
-				return Result.error(followingResult.error());
-			}
-			for (Following f : followingResult.value()) {
-				var deleteResult = dbAccess.deleteOne(f);
+			String query2 = format("SELECT * FROM follows f WHERE f.follower = '%s' OR f.id = '%s'", userId, userId);
+			List<Following> followingResult = dbAccess.sqlSpecific(query2, "follows", "follow",  Following.class);
+
+			for (Following f : followingResult) {
+				var deleteResult = dbAccess.deleteOneSpecific(f, "follows", "follow");
 				if (!deleteResult.isOK()) {
 					return Result.error(deleteResult.error());
 				}
 			}
 		
-			String query3 = format("SELECT * FROM c WHERE c.ownerId = '%s' OR c.userId = '%s'", userId, userId);
-			Result<List<Likes>> likesResult = dbAccess.query(Likes.class, query3);
-			if (!likesResult.isOK()) {
-				return Result.error(likesResult.error());
-			}
-			for (Likes l : likesResult.value()) {
-				var deleteResult = dbAccess.deleteOne(l);
+			String query3 = format("SELECT * FROM likes l WHERE l.ownerId = '%s' OR l.userId = '%s'", userId, userId);
+			List<Likes> likesResult = dbAccess.sqlSpecific(query3, "likes", "like", Likes.class);
+			for (Likes l : likesResult) {
+				var deleteResult = dbAccess.deleteOneSpecific(l, "likes", "like");
 				if (!deleteResult.isOK()) {
 					return Result.error(deleteResult.error());
 				}

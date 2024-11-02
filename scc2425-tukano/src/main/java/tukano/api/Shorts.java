@@ -28,7 +28,7 @@ public interface Shorts {
 	 * FORBIDDEN, if the password is not correct;
 	 * BAD_REQUEST, otherwise.
 	 */
-	Result<Short> createShort(String userId, String password);
+	Result<Short> createShort(String id, String password);
 
 	/**
 	 * Deletes a given Short.
@@ -57,7 +57,7 @@ public interface Shorts {
 	 * @param userId the user that owns the requested shorts
 	 * @return (OK, List<String>|empty list) or NOT_FOUND if the user does not exist
 	 */
-	Result<List<String>> getShorts( String userId );
+	Result<List<String>> getShorts( String id );
 	
 	/**
 	 * Causes a user to follow the shorts of another user.
@@ -82,7 +82,7 @@ public interface Shorts {
 	 * NOT_FOUND if the user does not exists
 	 * FORBIDDEN if the password is incorrect
 	 */
-	Result<List<String>> followers(String userId, String password);
+	Result<List<String>> followers(String id, String password);
 	/**
 	 * Adds or removes a like to a short
 	 * 
@@ -95,7 +95,7 @@ public interface Shorts {
 	 *  FORBIDDEN if the password of the user is incorrect
 	 *  BAD_REQUEST, otherwise
 	 */
-	Result<Void> like(String shortId, String userId, boolean isLiked, String password);
+	Result<Void> like(String shortId, String id, boolean isLiked, String password);
 	
 
 	/**
@@ -120,7 +120,7 @@ public interface Shorts {
 	 * 	NOT_FOUND if the user does not exists
 	 *  FORBIDDEN if the password is incorrect
 	 */
-	Result<List<String>> getFeed(String userId, String password);
+	Result<List<String>> getFeed(String id, String password);
 
-	Result<Void> deleteAllShorts(String userId, String password, String token);
+	Result<Void> deleteAllShorts(String id, String password, String token);
 }

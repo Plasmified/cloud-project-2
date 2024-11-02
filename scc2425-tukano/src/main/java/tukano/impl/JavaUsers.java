@@ -46,38 +46,50 @@ public class JavaUsers implements Users {
 	}
 
 	@Override
-	public Result<User> getUser(String userId, String pwd) {
-		Log.info( () -> format("getUser : userId = %s, pwd = %s\n", userId, pwd));
+	public Result<User> getUser(String id, String pwd) {
+		Log.info( () -> format("getUser : id = %s, pwd = %s\n", id, pwd));
 
-		if (userId == null)
+		if (id == null)
 			return error(BAD_REQUEST);
 		
-		return validatedUserOrError( dbAccess.getOne( userId, User.class), pwd);
+			Result<List<User>> res = dbAccess.query(User.class, String.format("SELECT * FROM users WHERE users.id=\"%s\"", id));
+			
+			User u = res.value().get(0);
+
+			return validatedUserOrError(Result.ok(u), pwd);
 	}
 
 	@Override
-	public Result<User> updateUser(String userId, String pwd, User other) {
-		Log.info(() -> format("updateUser : userId = %s, pwd = %s, user: %s\n", userId, pwd, other));
+	public Result<User> updateUser(String id, String pwd, User other) {
+		Log.info(() -> format("updateUser : id = %s, pwd = %s, user: %s\n", id, pwd, other));
 
-		if (badUpdateUserInfo(userId, pwd, other))
+		if (badUpdateUserInfo(id, pwd, other))
 			return error(BAD_REQUEST);
 
-		return errorOrResult( validatedUserOrError(dbAccess.getOne( userId, User.class), pwd), user -> dbAccess.updateOne( user.updateFrom(other)));
+		Result<List<User>> res = dbAccess.query(User.class, String.format("SELECT * FROM users WHERE users.id=\"%s\"", id));
+			
+		User u = res.value().get(0);
+
+		return errorOrResult( validatedUserOrError(Result.ok(u), pwd), user -> dbAccess.updateOne( user.updateFrom(other)));
 	}
 
 	@Override
-	public Result<User> deleteUser(String userId, String pwd) {
-		Log.info(() -> format("deleteUser : userId = %s, pwd = %s\n", userId, pwd));
+	public Result<User> deleteUser(String id, String pwd) {
+		Log.info(() -> format("deleteUser : id = %s, pwd = %s\n", id, pwd));
 
-		if (userId == null || pwd == null )
+		if (id == null || pwd == null )
 			return error(BAD_REQUEST);
 
-		return errorOrResult( validatedUserOrError(dbAccess.getOne( userId, User.class), pwd), user -> {
+		Result<List<User>> res = dbAccess.query(User.class, String.format("SELECT * FROM users WHERE users.id=\"%s\"", id));
+			
+		User u = res.value().get(0);
+
+		return errorOrResult( validatedUserOrError(Result.ok(u), pwd), user -> {
 
 			// Delete user shorts and related info asynchronously in a separate thread
 			Executors.defaultThreadFactory().newThread( () -> {
-				JavaShorts.getInstance().deleteAllShorts(userId, pwd, Token.get(userId));
-				JavaBlobs.getInstance().deleteAllBlobs(userId, Token.get(userId));
+				JavaShorts.getInstance().deleteAllShorts(id, pwd, Token.get(id));
+				JavaBlobs.getInstance().deleteAllBlobs(id, Token.get(id));
 			}).start();
 			
 			return dbAccess.deleteOne( user);
@@ -88,13 +100,14 @@ public class JavaUsers implements Users {
 	public Result<List<User>> searchUsers(String pattern) {
 		Log.info( () -> format("searchUsers : patterns = %s\n", pattern));
 
-		var query = format("SELECT * FROM User u WHERE UPPER(u.userId) LIKE '%%%s%%'", pattern.toUpperCase());
-		var hits = dbAccess.sql(query, User.class)
-				.stream()
-				.map(User::copyWithoutPassword)
-				.toList();
+		var query = format("SELECT * FROM User u WHERE UPPER(u.id) LIKE '%%%s%%'", pattern.toUpperCase());
+		var hits = dbAccess.sql(query, User.class);
+				
+		Log.info( () -> format("searchUsers : query = %s\n", query));
 
-		return ok(hits);
+		Log.info( () -> format("searchUsers : hits = %s\n", hits));
+
+		return ok(hits.stream().map(User::copyWithoutPassword).toList());
 	}
 
 	
@@ -109,7 +122,7 @@ public class JavaUsers implements Users {
 		return (user.id() == null || user.pwd() == null || user.displayName() == null || user.email() == null);
 	}
 	
-	private boolean badUpdateUserInfo( String userId, String pwd, User info) {
-		return (userId == null || pwd == null || info.getId() != null && ! userId.equals( info.getId()));
+	private boolean badUpdateUserInfo( String id, String pwd, User info) {
+		return (id == null || pwd == null || info.getId() != null && ! id.equals( info.getId()));
 	}
 }

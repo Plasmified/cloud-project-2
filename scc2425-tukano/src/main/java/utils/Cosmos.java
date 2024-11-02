@@ -16,106 +16,107 @@ import com.azure.cosmos.models.CosmosItemRequestOptions;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 
-// Ficheiro onde temos as keys para ser mais fácil de testar tudo
 import main.KeysRecord;
-
 import tukano.api.Result;
 
 public class Cosmos {
 
-	private static final String CONNECTION_URL = KeysRecord.CONNECTION_URL;
-	private static final String DB_KEY = KeysRecord.DB_KEY;
-	private static String DB_NAME = KeysRecord.DB_NAME;
-	private static String CONTAINER = KeysRecord.CONTAINER;
-	
-	private static Cosmos instance;
+    private static final String CONNECTION_URL = KeysRecord.CONNECTION_URL;
+    private static final String DB_KEY = KeysRecord.DB_KEY;
+    
+    private static Cosmos instance;
 
-	private static Logger Log = Logger.getLogger(Cosmos.class.getName());
+    private static Logger Log = Logger.getLogger(Cosmos.class.getName());
 
-	public static synchronized Cosmos getInstance(String dbname, String dbcontainer) {
-		DB_NAME = dbname;
-		CONTAINER = dbcontainer;
-		if( instance != null)
-			return instance;
+    private CosmosClient client;
+    private CosmosDatabase db;
+    private CosmosContainer container;
+    
+    private String dbName;
+    private String containerName;
 
-		CosmosClient client = new CosmosClientBuilder()
-		         .endpoint(CONNECTION_URL)
-		         .key(DB_KEY)
-		         //.directMode()
-		         .gatewayMode()		
-		         // replace by .directMode() for better performance
-		         .consistencyLevel(ConsistencyLevel.SESSION)
-		         .connectionSharingAcrossClientsEnabled(true)
-		         .contentResponseOnWriteEnabled(true)
-		         .buildClient();
-		instance = new Cosmos( client);
-		return instance;
-		
-	}
-	
-	private CosmosClient client;
-	private CosmosDatabase db;
-	private CosmosContainer container;
-	
-	public Cosmos(CosmosClient client) {
-		this.client = client;
-	}
-	
-	private synchronized void init() {
-		if( db != null)
-			return;
-		db = client.getDatabase(DB_NAME);
-		container = db.getContainer(CONTAINER);
-	}
+    private Cosmos(CosmosClient client, String dbName, String containerName) {
+        this.client = client;
+        this.dbName = dbName;
+        this.containerName = containerName;
+    }
 
-	public void close() {
-		client.close();
-	}
-	
-	public <T> Result<T> getOne(String id, Class<T> clazz) {
-		return tryCatch( () -> container.readItem(id, new PartitionKey(id), clazz).getItem());
-	}
-	
-	public <T> Result<?> deleteOne(T obj) {
-		return tryCatch( () -> container.deleteItem(obj, new CosmosItemRequestOptions()).getItem());
-	}
-	
-	public <T> Result<T> updateOne(T obj) {
-		return tryCatch( () -> container.upsertItem(obj).getItem());
-	}
-	
-	public <T> Result<T> insertOne( T obj) {
-		return tryCatch( () -> container.createItem(obj).getItem());
-	}
-	
-	public <T> Result<List<T>> query(Class<T> clazz, String queryStr) {
-		return tryCatch(() -> {
-			var res = container.queryItems(queryStr, new CosmosQueryRequestOptions(), clazz);
-			return res.stream().toList();
-		});
-	}
-	
-	<T> Result<T> tryCatch( Supplier<T> supplierFunc) {
-		try {
-			init();
-			return Result.ok(supplierFunc.get());			
-		} catch( CosmosException ce ) {
-			//ce.printStackTrace();
-			Log.info(() -> format("COSMOS : %s\n", ce.getMessage()));
-			return Result.error ( errorCodeFromStatus(ce.getStatusCode() ));		
-		} catch( Exception x ) {
-			//x.printStackTrace();
-			Log.info(() -> format("COSMOS : %s\n", x.getMessage()));
-			return Result.error( Result.ErrorCode.INTERNAL_ERROR);						
-		}
-	}
-	
-	static Result.ErrorCode errorCodeFromStatus( int status ) {
-		return switch( status ) {
-		case 200 -> Result.ErrorCode.OK;
-		case 404 -> Result.ErrorCode.NOT_FOUND;
-		case 409 -> Result.ErrorCode.CONFLICT;
-		default -> Result.ErrorCode.INTERNAL_ERROR;
-		};
-	}
+    public static synchronized Cosmos getInstance(String dbName, String containerName) {
+        if (instance != null) {
+            if (!instance.dbName.equals(dbName) || !instance.containerName.equals(containerName)) {
+                instance.close();
+                instance = null;
+            } else {
+                return instance;
+            }
+        }
+
+        CosmosClient client = new CosmosClientBuilder()
+                .endpoint(CONNECTION_URL)
+                .key(DB_KEY)
+                .gatewayMode()    // use .directMode() for better performance
+                .consistencyLevel(ConsistencyLevel.SESSION)
+                .connectionSharingAcrossClientsEnabled(true)
+                .contentResponseOnWriteEnabled(true)
+                .buildClient();
+
+        instance = new Cosmos(client, dbName, containerName);
+        return instance;
+    }
+    
+    private synchronized void init() {
+        if (db != null) return;
+        
+        db = client.getDatabase(dbName);
+        container = db.getContainer(containerName);
+    }
+
+    public void close() {
+        client.close();
+    }
+    
+    public <T> Result<T> getOne(String id, Class<T> clazz) {
+        return tryCatch(() -> container.readItem(id, new PartitionKey(id), clazz).getItem());
+    }
+    
+    public <T> Result<?> deleteOne(T obj) {
+        return tryCatch(() -> container.deleteItem(obj, new CosmosItemRequestOptions()).getItem());
+    }
+    
+    public <T> Result<T> updateOne(T obj) {
+        return tryCatch(() -> container.upsertItem(obj).getItem());
+    }
+    
+    public <T> Result<T> insertOne(T obj) {
+        return tryCatch(() -> container.createItem(obj).getItem());
+    }
+    
+    public <T> Result<List<T>> query(Class<T> clazz, String queryStr) {
+        return tryCatch(() -> {
+            var res = container.queryItems(queryStr, new CosmosQueryRequestOptions(), clazz);
+            return res.stream().toList();
+        });
+    }
+    
+    <T> Result<T> tryCatch(Supplier<T> supplierFunc) {
+        try {
+            init();
+            return Result.ok(supplierFunc.get());
+        } catch (CosmosException ce) {
+            Log.info(() -> format("COSMOS : %s\n", ce.getMessage()));
+            return Result.error(errorCodeFromStatus(ce.getStatusCode()));
+        } catch (Exception x) {
+            Log.info(() -> format("COSMOS : %s\n", x.getMessage()));
+            return Result.error(Result.ErrorCode.INTERNAL_ERROR);
+        }
+    }
+    
+    static Result.ErrorCode errorCodeFromStatus(int status) {
+        return switch (status) {
+            case 200 -> Result.ErrorCode.OK;
+            case 404 -> Result.ErrorCode.NOT_FOUND;
+            case 409 -> Result.ErrorCode.CONFLICT;
+            default -> Result.ErrorCode.INTERNAL_ERROR;
+        };
+    }
 }

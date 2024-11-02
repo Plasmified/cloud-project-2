@@ -12,7 +12,7 @@ public class Likes {
 	String userId;
 	
 	@Id 
-	String shortId;
+	String id;
 	
 	public String getOwnerId() {
 		return ownerId;
@@ -26,9 +26,9 @@ public class Likes {
 	
 	public Likes() {}
 
-	public Likes(String userId, String shortId, String ownerId) {
+	public Likes(String userId, String id, String ownerId) {
 		this.userId = userId;
-		this.shortId = shortId;
+		this.id = id;
 		this.ownerId = ownerId;
 	}
 
@@ -40,22 +40,22 @@ public class Likes {
 		this.userId = userId;
 	}
 
-	public String getShortId() {
-		return shortId;
+	public String getId() {
+		return id;
 	}
 
-	public void setShortId(String shortId) {
-		this.shortId = shortId;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	@Override
 	public String toString() {
-		return "Likes [userId=" + userId + ", shortId=" + shortId + ", ownerId=" + ownerId + "]";
+		return "Likes [userId=" + userId + ", shortId=" + id + ", ownerId=" + ownerId + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(ownerId, shortId, userId);
+		return Objects.hash(ownerId, id, userId);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class Likes {
 		if (getClass() != obj.getClass())
 			return false;
 		Likes other = (Likes) obj;
-		return Objects.equals(ownerId, other.ownerId) && Objects.equals(shortId, other.shortId)
+		return Objects.equals(ownerId, other.ownerId) && Objects.equals(id, other.id)
 				&& Objects.equals(userId, other.userId);
 	}
 	
