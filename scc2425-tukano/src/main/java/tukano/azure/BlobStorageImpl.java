@@ -14,7 +14,6 @@ public class BlobStorageImpl {
         try {
 			BinaryData data = BinaryData.fromBytes(bytes);
 
-			// Get container client
 			BlobContainerClient containerClient = new BlobContainerClientBuilder()
 														.connectionString(STORAGE_CONNECTION_KEY)
 														.containerName(BLOBS_CONTAINER_NAME)
@@ -50,4 +49,22 @@ public class BlobStorageImpl {
 
         return arr;
     }
+
+	public void DeleteFromBlobStorage(String blobId) {
+        try {
+
+			BlobContainerClient containerClient = new BlobContainerClientBuilder()
+														.connectionString(STORAGE_CONNECTION_KEY)
+														.containerName(BLOBS_CONTAINER_NAME)
+														.buildClient();
+
+			BlobClient blob = containerClient.getBlobClient(blobId);
+
+			blob.deleteIfExists();
+			
+		} catch( Exception e) {
+			e.printStackTrace();
+		}
+    }
+
 }
