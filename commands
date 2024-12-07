@@ -1,0 +1,12 @@
+mvn clean compile package
+docker build -t nome/image-name .
+(docker build -t plasmified/scc2425-tukano-users-shorts-v4 .)
+docker push nome/image-name
+(docker push plasmified/scc2425-tukano-users-shorts-v4)
+
+Para os Services : kubectl apply -f nomedoyamal.yaml (para cada yamal).
+				   kubectl get pods
+					
+				   Para ver o que esta no interior do pod :
+					kubectl exec -it nome-do-pod -- /bin/bash
+					

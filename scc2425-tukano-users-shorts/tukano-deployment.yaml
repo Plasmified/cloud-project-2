@@ -14,13 +14,17 @@ spec:
     spec:
       containers:
       - name: tukano-container
-        image: plasmified/scc2425-tukano-users-shorts:latest
+        image: plasmified/scc2425-tukano-users-shorts-v4:latest
         ports:
         - containerPort: 8080
         env:
         - name: DB_HOST
-          value: "db-service"
+          value: "postgres-service"
         - name: DB_PORT
           value: "5432"
-        - name: BLOBS_SERVICE_URL
-          value: "http://blobs-service"
+        - name: DB_USER
+          value: "citus"
+        - name: DB_PASSWORD
+          value: "password"
+        - name: DB_NAME
+          value: "users"

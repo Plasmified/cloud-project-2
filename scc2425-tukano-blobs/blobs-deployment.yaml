@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: blobs-container
-        image: plasmified/scc2425-tukano-blobs:latest
+        image: plasmified/scc2425-tukano-blobs-v2:latest
         ports:
         - containerPort: 8080
         volumeMounts:
