@@ -39,7 +39,7 @@ public class JavaUsers implements Users {
 		if( badUserInfo( user ) )
 				return error(BAD_REQUEST);
 
-		return errorOrValue( DB.insertOneCosmos( user), user.getId() );
+		return errorOrValue( DB.insertOne( user), user.getId() );
 	}
 
 	@Override
