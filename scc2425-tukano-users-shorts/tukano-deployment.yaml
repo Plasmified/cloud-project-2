@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tukano-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tukano-service
+  template:
+    metadata:
+      labels:
+        app: tukano-service
+    spec:
+      containers:
+      - name: tukano-container
+        image: plasmified/scc2425-tukano-users-shorts:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_HOST
+          value: "db-service"
+        - name: DB_PORT
+          value: "5432"
+        - name: BLOBS_SERVICE_URL
+          value: "http://blobs-service"

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blobs-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blobs-service
+  template:
+    metadata:
+      labels:
+        app: blobs-service
+    spec:
+      containers:
+      - name: blobs-container
+        image: plasmified/scc2425-tukano-blobs:latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: blob-storage
+          mountPath: /data
+      volumes:
+      - name: blob-storage
+        persistentVolumeClaim:
+          claimName: blob-pvc
