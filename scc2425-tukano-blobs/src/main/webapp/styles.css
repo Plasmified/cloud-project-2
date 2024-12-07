@@ -1,0 +1,237 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Colors */
+  :root {
+    --dark-green: #0B3D0B;
+    --medium-green: #27AE60;
+    --light-green: #A9DFBF;
+    --accent-green: #1D8348;
+  }
+  
+  /* Main Page Styles */
+  body.main-page {
+    background-color: var(--dark-green);
+    color: var(--light-green);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  header {
+    width: 100%;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--accent-green);
+  }
+  
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  nav .btn {
+    color: var(--light-green);
+    text-decoration: none;
+    font-weight: bold;
+    margin-left: 1rem;
+  }
+  
+  main {
+    width: 100%;
+    padding: 2rem;
+    text-align: center;
+  }
+  
+  main h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  main p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .cta-btn {
+    background-color: var(--medium-green);
+    color: var(--light-green);
+    padding: 1rem 2rem;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+  }
+  
+  .cta-btn:hover {
+    background-color: var(--light-green);
+    color: var(--dark-green);
+  }
+  
+  footer {
+    margin-top: auto;
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+    width: 100%;
+  }
+  
+  footer a {
+    color: var(--light-green);
+    text-decoration: none;
+    margin: 0 0.5rem;
+  }
+  
+  /* Login Page Styles */
+  body.login-page {
+    background-color: var(--dark-green);
+    color: var(--light-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  .login-container {
+    background-color: var(--accent-green);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    text-align: center;
+  }
+
+  .login-container h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    color: var(--light-green);
+  }
+
+  .login-container label {
+    display: block;
+    margin: 1rem 0 0.5rem;
+    font-weight: bold;
+  }
+
+  .login-container input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--light-green);
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    background-color: var(--medium-green);
+    color: var(--light-green);
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--medium-green);
+    color: var(--light-green);
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .login-btn:hover {
+    background-color: var(--light-green);
+    color: var(--dark-green);
+  }
+
+  .forgot-password {
+    display: block;
+    margin-top: 1rem;
+    color: var(--light-green);
+    text-decoration: none;
+  }
+
+  .forgot-password:hover {
+    text-decoration: underline;
+  }
+
+  .login-container p {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  /* Register Page Styles */
+  body.register-page {
+    background-color: var(--dark-green);
+    color: var(--light-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  .register-container {
+    background-color: var(--accent-green);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    text-align: center;
+  }
+
+  .register-container h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    color: var(--light-green);
+  }
+
+  .register-container label {
+    display: block;
+    margin: 1rem 0 0.5rem;
+    font-weight: bold;
+  }
+
+  .register-container input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--light-green);
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    background-color: var(--medium-green);
+    color: var(--light-green);
+  }
+
+  .register-btn {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--medium-green);
+    color: var(--light-green);
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .register-btn:hover {
+    background-color: var(--light-green);
+    color: var(--dark-green);
+  }
+
+  .register-container p {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  .register-container a {
+    color: var(--light-green);
+    text-decoration: none;
+  }
+
+  .register-container a:hover {
+    text-decoration: underline;
+  }
