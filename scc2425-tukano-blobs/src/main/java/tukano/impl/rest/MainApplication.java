@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.ws.rs.core.Application;
+import tukano.impl.Token;
 import utils.Props;
 
 public class MainApplication extends Application
@@ -12,6 +13,7 @@ public class MainApplication extends Application
 	private Set<Class<?>> resources = new HashSet<>();
 
 	public MainApplication() {
+		Token.setSecret("supersecretni$$an");
 		resources.add(RestBlobsResource.class);
 		//singletons.add(new BlobsResources());
 		

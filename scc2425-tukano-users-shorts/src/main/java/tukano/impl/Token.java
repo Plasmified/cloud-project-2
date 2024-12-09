@@ -1,5 +1,7 @@
 package tukano.impl;
 
+import static java.lang.String.format;
+
 import java.util.logging.Logger;
 
 import utils.Hash;
@@ -22,7 +24,10 @@ public class Token {
 	}
 	
 	public static String get(String id) {
+		Log.info(() -> format("ID : %s", id));
 		var timestamp = System.currentTimeMillis();
+		Log.info(() -> format("TS : %s", timestamp));
+		Log.info(() -> format("Secret : %s", secret));
 		var signature = Hash.of(id, timestamp, secret);
 		return String.format("%s%s%s", timestamp, DELIMITER, signature);
 	}

@@ -3,16 +3,15 @@ package tukano.impl;
 import static java.lang.String.format;
 import static tukano.api.Result.error;
 import static tukano.api.Result.ErrorCode.FORBIDDEN;
-import static tukano.api.Result.ErrorCode.INTERNAL_ERROR;
-import static tukano.api.Result.ErrorCode.NOT_FOUND;
+// import static tukano.api.Result.ErrorCode.NOT_FOUND;
 
-import java.util.Base64;
+// import java.util.Base64;
 import java.util.logging.Logger;
 
 import tukano.api.Blobs;
 import tukano.api.Result;
-import tukano.azure.BlobStorageImpl;
-import tukano.impl.cache.RedisCache;
+// import tukano.azure.BlobStorageImpl;
+// import tukano.impl.cache.RedisCache;
 import tukano.impl.rest.TukanoRestServer;
 import tukano.impl.storage.BlobStorage;
 import tukano.impl.storage.FilesystemStorage;
@@ -25,7 +24,7 @@ public class JavaBlobs implements Blobs {
 	private static Logger Log = Logger.getLogger(JavaBlobs.class.getName());
 
 	public String baseURI;
-	private BlobStorageImpl azureStorage;
+	// private BlobStorageImpl azureStorage;
 	private BlobStorage storage;
 	
 	synchronized public static Blobs getInstance() {
@@ -46,24 +45,28 @@ public class JavaBlobs implements Blobs {
 		if (!validBlobId(blobId, token))
 			return error(FORBIDDEN);
 
-		try {
+		//azureStorage.UploadToBlobStorage(blobId, bytes);
 
-			//Tentar guardar na cache redis antes de guardar na blob storage
-			try (var jedis = RedisCache.getCachePool().getResource()) {
-				var key = "blob:" + blobId;
-				// Converter byte[] para String porque Redis nao suporta byte[]
-				String value = Base64.getEncoder().encodeToString(bytes);
-				jedis.set(key, value);
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
+		return storage.write( toPath( blobId ), bytes);
 
-			azureStorage.UploadToBlobStorage(blobId, bytes);
+		// try {
 
-			return storage.write( toPath( blobId ), bytes);
-		} catch (Exception e) {
-			return error(INTERNAL_ERROR);
-		}
+		// 	//Tentar guardar na cache redis antes de guardar na blob storage
+		// 	try (var jedis = RedisCache.getCachePool().getResource()) {
+		// 		var key = "blob:" + blobId;
+		// 		// Converter byte[] para String porque Redis nao suporta byte[]
+		// 		String value = Base64.getEncoder().encodeToString(bytes);
+		// 		jedis.set(key, value);
+		// 	} catch(Exception e) {
+		// 		e.printStackTrace();
+		// 	}
+
+		// 	azureStorage.UploadToBlobStorage(blobId, bytes);
+
+		// 	return storage.write( toPath( blobId ), bytes);
+		// } catch (Exception e) {
+		// 	return error(INTERNAL_ERROR);
+		// }
 
 		
 	}
@@ -75,39 +78,41 @@ public class JavaBlobs implements Blobs {
 		if( ! validBlobId( blobId, token ) )
 			return error(FORBIDDEN);
 
+		return storage.read( toPath( blobId ) );
+		
 		// // Verificar isto, solucao temporaria para usar ao Storage.
 		// if (azureStorage.DownloadFromBlobStorage(blobId) != res.value())
 		// 	return error(FORBIDDEN);
 		
 		//Ver primeiro se o Blob está em cache
-		try( var jedis = RedisCache.getCachePool().getResource()) {
-			var key = "blob:" + blobId;
-			String value = jedis.get(key);
-			if( value != null ) {
-				// voltar a converter de string para byte[]
-				byte [] bytes = Base64.getDecoder().decode(value);
-				return Result.ok(bytes);
-			}
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+		// try( var jedis = RedisCache.getCachePool().getResource()) {
+		// 	var key = "blob:" + blobId;
+		// 	String value = jedis.get(key);
+		// 	if( value != null ) {
+		// 		// voltar a converter de string para byte[]
+		// 		byte [] bytes = Base64.getDecoder().decode(value);
+		// 		return Result.ok(bytes);
+		// 	}
+		// } catch(Exception e) {
+		// 	e.printStackTrace();
+		// }
 
 		// Se não estiver no cache, ir buscar ao blob storage
-		byte[] res = azureStorage.DownloadFromBlobStorage(blobId);
-		if (res == null) {
-			return error(NOT_FOUND);
-		}
+		// byte[] res = azureStorage.DownloadFromBlobStorage(blobId);
+		// if (res == null) {
+		// 	return error(NOT_FOUND);
+		// }
 
-		// Armazenar o blob recuperado (que não estava em cache) no cache redis
-		try (var jedis = RedisCache.getCachePool().getResource()) {
-			var key = "blob:" + blobId;
-			String value = Base64.getEncoder().encodeToString(res);
-			jedis.set(key, value);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		// // Armazenar o blob recuperado (que não estava em cache) no cache redis
+		// try (var jedis = RedisCache.getCachePool().getResource()) {
+		// 	var key = "blob:" + blobId;
+		// 	String value = Base64.getEncoder().encodeToString(res);
+		// 	jedis.set(key, value);
+		// } catch (Exception e) {
+		// 	e.printStackTrace();
+		// }
 
-    	return Result.ok(res);
+    	// return Result.ok(res);
 	}
 
 	@Override
@@ -117,13 +122,13 @@ public class JavaBlobs implements Blobs {
 		if( ! validBlobId( blobId, token ) )
 			return error(FORBIDDEN);
 
-		// remover blob do cache redis
-		try (var jedis = RedisCache.getCachePool().getResource()) {
-			var key = "blob:" + blobId;
-			jedis.del(key);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		// // remover blob do cache redis
+		// try (var jedis = RedisCache.getCachePool().getResource()) {
+		// 	var key = "blob:" + blobId;
+		// 	jedis.del(key);
+		// } catch (Exception e) {
+		// 	e.printStackTrace();
+		// }
 
 		return storage.delete( toPath(blobId));
 	}

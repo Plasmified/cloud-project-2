@@ -10,3 +10,13 @@ Para os Services : kubectl apply -f nomedoyamal.yaml (para cada yamal).
 				   Para ver o que esta no interior do pod :
 					kubectl exec -it nome-do-pod -- /bin/bash
 					
+					Antes de fazer o port forwarding, atualizar os containers do deployment : kubectl rollout restart deployment blobs-deployment
+					
+					Em seguida fazer : kubectl port-forward deployment/tukano-deployment 8080:8080
+		
+Para os Blobs :		
+	mvn clean compile package
+	docker build -t plasmified/scc2425-tukano-blobs-v2 .  
+	docker push plasmified/scc2425-tukano-blobs-v2
+	kubectl rollout restart deployment blobs-deployment
+	kubectl port-forward deployment/blobs-deployment 8080:8080
