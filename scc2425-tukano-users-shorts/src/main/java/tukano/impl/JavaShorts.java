@@ -18,15 +18,16 @@ import tukano.api.Result;
 import tukano.api.Short;
 import tukano.api.Shorts;
 import tukano.api.User;
+import tukano.clients.rest.RestBlobsClient;
 import tukano.impl.data.Following;
 import tukano.impl.data.Likes;
-import tukano.impl.rest.TukanoRestServer;
 import utils.DB;
 
 public class JavaShorts implements Shorts {
 
 	private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
-	
+	private RestBlobsClient rbc;
+	private String serverURI = "http://blobs-service:8081/tukano-blobs-1/rest";
 	private static Shorts instance;
 	
 	synchronized public static Shorts getInstance() {
@@ -35,7 +36,9 @@ public class JavaShorts implements Shorts {
 		return instance;
 	}
 	
-	private JavaShorts() {}
+	private JavaShorts() {
+		rbc  = new RestBlobsClient(serverURI);
+	}
 	
 	
 	@Override
@@ -79,8 +82,7 @@ public class JavaShorts implements Shorts {
 					var query = format("DELETE Likes l WHERE l.shortId = '%s'", shortId);
 					hibernate.createNativeQuery( query, Likes.class).executeUpdate();
 					
-					//TODO : Reimplement this to access the blobs service !
-					//JavaBlobs.getInstance().delete(shrt.getBlobUrl(), Token.get() );
+					rbc.delete(shrt.getBlobUrl(), Token.get(shrt.getBlobUrl()));
 				});
 			});	
 		});

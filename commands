@@ -19,4 +19,4 @@ Para os Blobs :
 	docker build -t plasmified/scc2425-tukano-blobs-v2 .  
 	docker push plasmified/scc2425-tukano-blobs-v2
 	kubectl rollout restart deployment blobs-deployment
-	kubectl port-forward deployment/blobs-deployment 8080:8080
+	kubectl port-forward deployment/blobs-deployment 8081:8081

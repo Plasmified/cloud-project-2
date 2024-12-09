@@ -6,7 +6,6 @@ spec:
   selector:
     app: blobs-service
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
-  type: ClusterIP
+    - port: 80
+      targetPort: 8081
+  type: NodePort

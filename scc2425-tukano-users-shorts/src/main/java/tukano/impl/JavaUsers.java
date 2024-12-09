@@ -15,12 +15,14 @@ import java.util.logging.Logger;
 import tukano.api.Result;
 import tukano.api.User;
 import tukano.api.Users;
+import tukano.clients.rest.RestBlobsClient;
 import utils.DB;
 
 public class JavaUsers implements Users {
 	
 	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
-
+	private RestBlobsClient rbc;
+	private String serverURI = "http://blobs-service:8081/tukano-blobs-1/rest";
 	private static Users instance;
 	
 	synchronized public static Users getInstance() {
@@ -29,7 +31,9 @@ public class JavaUsers implements Users {
 		return instance;
 	}
 	
-	private JavaUsers() {}
+	private JavaUsers() {
+		rbc  = new RestBlobsClient(serverURI);
+	}
 	
 	@Override
 	public Result<String> createUser(User user) {
@@ -74,9 +78,7 @@ public class JavaUsers implements Users {
 			// Delete user shorts and related info asynchronously in a separate thread
 			Executors.defaultThreadFactory().newThread( () -> {
 				JavaShorts.getInstance().deleteAllShorts(userId, pwd, Token.get(userId));
-				
-				//TODO : Reimplement this to access the blobs service !
-				//JavaBlobs.getInstance().deleteAllBlobs(userId, Token.get(userId));
+				rbc.deleteAllBlobs(userId, Token.get(userId));
 			}).start();
 			
 			return DB.deleteOne( user);
