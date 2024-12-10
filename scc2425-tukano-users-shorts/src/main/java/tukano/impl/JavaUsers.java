@@ -22,7 +22,7 @@ public class JavaUsers implements Users {
 	
 	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
 	private RestBlobsClient rbc;
-	private String serverURI = "http://blobs-service:8081/tukano-blobs-1/rest";
+	private String serverURI = "http://blobs-service:8080/tukano-blobs-1/rest";
 	private static Users instance;
 	
 	synchronized public static Users getInstance() {
@@ -74,11 +74,10 @@ public class JavaUsers implements Users {
 			return error(BAD_REQUEST);
 
 		return errorOrResult( validatedUserOrError(DB.getOne( userId, User.class), pwd), user -> {
-
-			// Delete user shorts and related info asynchronously in a separate thread
 			Executors.defaultThreadFactory().newThread( () -> {
 				JavaShorts.getInstance().deleteAllShorts(userId, pwd, Token.get(userId));
-				rbc.deleteAllBlobs(userId, Token.get(userId));
+				var res = rbc.deleteAllBlobs(userId, Token.get(userId));
+				Log.info(() -> format("DELETING BLOB : %s", res.isOK()));
 			}).start();
 			
 			return DB.deleteOne( user);
@@ -89,7 +88,7 @@ public class JavaUsers implements Users {
 	public Result<List<User>> searchUsers(String pattern) {
 		Log.info( () -> format("searchUsers : patterns = %s\n", pattern));
 
-		var query = format("SELECT * FROM User u WHERE UPPER(u.userId) LIKE '%%%s%%'", pattern.toUpperCase());
+		var query = format("SELECT * FROM AppUser u WHERE UPPER(u.id) LIKE '%%%s%%'", pattern.toUpperCase());
 		var hits = DB.sql(query, User.class)
 				.stream()
 				.map(User::copyWithoutPassword)

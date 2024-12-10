@@ -12,7 +12,10 @@ import static utils.DB.getOne;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+
+import org.hibernate.Session;
 
 import tukano.api.Result;
 import tukano.api.Short;
@@ -22,12 +25,13 @@ import tukano.clients.rest.RestBlobsClient;
 import tukano.impl.data.Following;
 import tukano.impl.data.Likes;
 import utils.DB;
+import utils.Hibernate;
 
 public class JavaShorts implements Shorts {
 
 	private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
 	private RestBlobsClient rbc;
-	private String serverURI = "http://blobs-service:8081/tukano-blobs-1/rest";
+	private String serverURI = "http://blobs-service:8080/tukano-blobs-1/rest";
 	private static Shorts instance;
 	
 	synchronized public static Shorts getInstance() {
@@ -79,8 +83,8 @@ public class JavaShorts implements Shorts {
 
 					hibernate.remove( shrt);
 					
-					var query = format("DELETE Likes l WHERE l.shortId = '%s'", shortId);
-					hibernate.createNativeQuery( query, Likes.class).executeUpdate();
+					var query = format("DELETE FROM Likes WHERE shortId = '%s'", shortId);
+					hibernate.createNativeQuery(query, Likes.class).executeUpdate();
 					
 					rbc.delete(shrt.getBlobUrl(), Token.get(shrt.getBlobUrl()));
 				});
@@ -143,12 +147,21 @@ public class JavaShorts implements Shorts {
 		Log.info(() -> format("getFeed : userId = %s, pwd = %s\n", userId, password));
 
 		final var QUERY_FMT = """
-				SELECT s.shortId, s.timestamp FROM Short s WHERE	s.ownerId = '%s'				
-				UNION			
-				SELECT s.shortId, s.timestamp FROM Short s, Following f 
-					WHERE 
-						f.followee = s.ownerId AND f.follower = '%s' 
-				ORDER BY s.timestamp DESC""";
+								SELECT shortId, timestamp 
+								FROM (
+									SELECT s.shortId, s.timestamp 
+									FROM Short s 
+									WHERE s.ownerId = '%s'
+									
+									UNION
+									
+									SELECT s.shortId, s.timestamp 
+									FROM Short s 
+									JOIN Following f ON f.followee = s.ownerId 
+									WHERE f.follower = '%s'
+								) AS unioned_shorts
+								ORDER BY timestamp DESC
+							  """;
 
 		return errorOrValue( okUser( userId, password), DB.sql( format(QUERY_FMT, userId, userId), String.class));		
 	}
@@ -168,25 +181,49 @@ public class JavaShorts implements Shorts {
 	@Override
 	public Result<Void> deleteAllShorts(String userId, String password, String token) {
 		Log.info(() -> format("deleteAllShorts : userId = %s, password = %s, token = %s\n", userId, password, token));
-
-		if( ! Token.isValid( token, userId ) )
+	
+		// Check if the token is valid
+		if (!Token.isValid(token, userId)) {
 			return error(FORBIDDEN);
-		
-		return DB.transaction( (hibernate) -> {
-						
-			//delete shorts
-			var query1 = format("DELETE Short s WHERE s.ownerId = '%s'", userId);		
-			hibernate.createQuery(query1, Short.class).executeUpdate();
-			
-			//delete follows
-			var query2 = format("DELETE Following f WHERE f.follower = '%s' OR f.followee = '%s'", userId, userId);		
-			hibernate.createQuery(query2, Following.class).executeUpdate();
-			
-			//delete likes
-			var query3 = format("DELETE Likes l WHERE l.ownerId = '%s' OR l.userId = '%s'", userId, userId);		
-			hibernate.createQuery(query3, Likes.class).executeUpdate();
-			
+		}
+	
+		// Run the deletion in a background thread using Executors
+		Executors.newSingleThreadExecutor().submit(() -> {
+			try (Session session = Hibernate.getInstance().sessionFactory.openSession()) {
+				// Start a transaction
+				session.beginTransaction();
+	
+				// Delete shorts
+				String query1 = "DELETE FROM Short WHERE ownerId = :userId";
+				session.createQuery(query1) // Don't specify entity class here
+					   .setParameter("userId", userId)
+					   .executeUpdate();
+	
+				// Delete follows
+				String query2 = "DELETE FROM Following WHERE follower = :userId OR followee = :userId";
+				session.createQuery(query2) // Don't specify entity class here
+					   .setParameter("userId", userId)
+					   .executeUpdate();
+	
+				// Delete likes
+				String query3 = "DELETE FROM Likes WHERE ownerId = :userId OR userId = :userId";
+				session.createQuery(query3) // Don't specify entity class here
+					   .setParameter("userId", userId)
+					   .executeUpdate();
+	
+				// Commit the transaction
+				session.getTransaction().commit();
+			} catch (Exception e) {
+				// Rollback the transaction if there was an exception
+				e.printStackTrace();
+				// Handle exception, possibly mark the operation as failed
+			}
 		});
+	
+		// Since this method is asynchronous, we immediately return success
+		return ok(null);
 	}
+	
+
 	
 }

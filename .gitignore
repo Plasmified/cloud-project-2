@@ -15,3 +15,4 @@ scc2425-tukano/target/maven-status/maven-compiler-plugin/compile/default-compile
 scc2425-tukano/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
 /scc2425-tukano/target
 *.lst
+/scc2425-tukano-blobs/target

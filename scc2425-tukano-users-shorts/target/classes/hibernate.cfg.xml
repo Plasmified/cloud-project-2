@@ -20,7 +20,7 @@
         <property name="current_session_context_class">thread</property>
         
         <!-- Automatically validates or exports schema DDL to the database when the SessionFactory is created -->
-        <property name="hbm2ddl.auto">update</property>
+        <property name="hbm2ddl.auto">create-drop</property>
         
         <!-- Apache DBCP (Database Connection Pooling) settings -->
         <property name="dbcp.initialSize">5</property>

@@ -3,6 +3,7 @@ package tukano.api;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import tukano.impl.Token;
 
 @Entity
 @Table(name = "AppUser")
@@ -66,7 +67,7 @@ public class User {
 	
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", pwd=" + pwd + ", email=" + email + ", displayName=" + displayName + "]";
+		return "User [id=" + id + ", pwd=" + pwd + ", email=" + email + ", displayName=" + displayName + ", token=" + Token.get(id) + "]";
 	}
 	
 	public User copyWithoutPassword() {
