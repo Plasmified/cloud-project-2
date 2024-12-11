@@ -1,0 +1,13 @@
+config:
+    target: http://127.0.0.1:8081/tukano-users-shorts-1/rest
+    phases:
+        - name: get_post_likes_phase
+          duration: 1
+          arrivalRate: 1
+scenarios:
+    - name: GetPostLikes
+      flow:
+        - get:
+            url: /shorts/POSTNAME/likes?pwd=PASSWORDOFTHEPOSTOWNER
+            headers:
+                Content-Type: application/json

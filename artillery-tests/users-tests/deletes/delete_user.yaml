@@ -1,0 +1,13 @@
+config:
+    target: http://127.0.0.1:8081/tukano-users-shorts-1/rest
+    phases:
+        - name: delete_phase
+          duration: 1
+          arrivalRate: 1
+scenarios:
+    - name: TuKanoDeleteUser
+      flow:
+        - delete:
+            url: /users/teste?pwd=testando
+            headers:
+                Content-Type: application/json

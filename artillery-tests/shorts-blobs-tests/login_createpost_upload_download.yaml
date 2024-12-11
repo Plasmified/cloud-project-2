@@ -1,0 +1,22 @@
+config:
+    target: http://127.0.0.1:8080/tukano-blobs-1/rest
+    phases:
+        - name: login_and_upload_phase
+          duration: 1
+          arrivalRate: 1
+scenarios:
+    - name: LoginAndUpload
+      flow:
+        # Login request
+        - post:
+            url: /login?username=teste&password=testando
+            headers:
+                Content-Type: application/json
+
+        - post:
+            url: /blobs/teste+22a65c0d-048d-4b1f-b237-43fda30a04a6?userId=teste&token=1733934480327-46F9ECB852471C22A4A80418B971F168
+            headers:
+                Content-Type: application/octet-stream
+                Cookie: "scc:session=71f09a31-3c25-42d9-88c1-07344923c85c"
+            body:
+                file: ./image.png  # Specify the file to be uploaded

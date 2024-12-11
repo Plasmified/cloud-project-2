@@ -1,0 +1,14 @@
+config:
+    target: http://127.0.0.1:8081/tukano-users-shorts-1/rest
+    phases:
+        - name: delete_short_phase
+          duration: 1
+          arrivalRate: 1
+scenarios:
+    - name: DeleteShort
+      flow:
+        - delete:
+            url: /shorts/SHORTNAME?pwd=OWNERPASS
+            headers:
+                Content-Type: application/json
+                Cookie: "scc:session=7b040dd1-f6bf-4545-917e-0b5a36192659"  # Replace this with the actual session ID

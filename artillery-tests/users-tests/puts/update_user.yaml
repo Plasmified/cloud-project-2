@@ -1,0 +1,29 @@
+config:
+    target: http://127.0.0.1:8080/tukano-1/rest
+    phases:
+        - name: simple_put
+          duration: 1
+          arrivalRate: 3
+    payload:
+        path: ./data/users.csv
+        order: sequence
+        skipHeader: true
+        delimiter: ","
+        skipEmptyLines: true
+        fields:
+            - "userId"
+            - "pwd"
+            - "email"
+            - "displayName"
+scenarios:
+    - name: TuKanoUpdate
+      flow:
+        - put:
+            url: /users/{{ userId }}?pwd={{ pwd }}
+            headers:
+                Content-Type: application/json
+            json:
+                id: "NewId"
+                pwd: "NewPass"
+                email: "kratos@gmail.com"
+                displayName: "Spartan"

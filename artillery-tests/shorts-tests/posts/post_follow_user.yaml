@@ -1,0 +1,13 @@
+config:
+    target: http://127.0.0.1:8081/tukano-users-shorts-1/rest
+    phases:
+        - name: follow_user_phase
+          duration: 1
+          arrivalRate: 1
+scenarios:
+    - name: FollowUser
+      flow:
+        - post:
+            url: /shorts/teste/CR7/followers?pwd=testando
+            headers:
+                Content-Type: application/json

@@ -1,0 +1,13 @@
+config:
+    target: http://127.0.0.1:8081/tukano-users-shorts-1/rest
+    phases:
+        - name: get_shorts_phase
+          duration: 1
+          arrivalRate: 1
+scenarios:
+    - name: GetUserShorts
+      flow:
+        - get:
+            url: /shorts/USERID/shorts
+            headers:
+                Content-Type: application/json

@@ -1,0 +1,12 @@
+config:
+    target: http://127.0.0.1:8081/tukano-users-shorts-1/rest
+    phases:
+        - name: simple_get
+          duration: 1
+          arrivalRate: 1
+
+scenarios:
+    - name: TuKanoHome
+      flow:
+        - get:
+            url: /users/teste?pwd=testando

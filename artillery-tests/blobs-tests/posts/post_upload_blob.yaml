@@ -1,0 +1,15 @@
+config:
+    target: http://127.0.0.1:8080/tukano-blobs-1/rest
+    phases:
+        - name: upload_blob_phase
+          duration: 1
+          arrivalRate: 1
+scenarios:
+    - name: UploadBlob
+      flow:
+        - post:
+            url: /blobs/teste+3b0a8dd7-2e85-4af1-9bc0-22124d03d971?userId=teste&token=1733933758310-81D8ECC8C14E5BF371A32DD045A4AE1B
+            headers:
+                Content-Type: application/octet-stream
+            body:
+                file: ./image.png

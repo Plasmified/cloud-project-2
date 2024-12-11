@@ -1,0 +1,20 @@
+config:
+    target: http://127.0.0.1:8081/tukano-users-shorts-1/rest
+    phases:
+        - name: delete_short_phase
+          duration: 1
+          arrivalRate: 1
+scenarios:
+    - name: LoginAndDeleteShort
+      flow:
+        - post:
+            url: /login?username=teste&password=testando
+            capture:
+              - json: "$.cookie"
+            headers:
+                Content-Type: application/json
+        - delete:
+            url: /shorts/SHORTNAME?pwd=OWNERPASS
+            headers:
+                Content-Type: application/json
+                Cookie: "scc:session={{ $.cookie }}"

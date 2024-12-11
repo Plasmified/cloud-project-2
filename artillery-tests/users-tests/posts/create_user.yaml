@@ -1,0 +1,18 @@
+config:
+    target: http://127.0.0.1:8081/tukano-users-shorts-1/rest
+    phases:
+        - name: simple_post
+          duration: 1
+          arrivalRate: 1
+scenarios:
+    - name: TuKanoRegister
+      flow:
+        - post:
+            url: /users/
+            headers:
+                Content-Type: application/json
+            json:
+                id: "teste"
+                pwd: "testando"
+                email: "teste@fct.unl.pt"
+                displayName: "Teste"

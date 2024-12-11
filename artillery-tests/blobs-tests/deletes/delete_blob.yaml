@@ -1,0 +1,13 @@
+config:
+    target: http://127.0.0.1:8080/tukano-blobs-1/rest
+    phases:
+        - name: delete_blob_phase
+          duration: 1
+          arrivalRate: 1
+scenarios:
+    - name: DeleteBlob
+      flow:
+        - delete:
+            url: /blobs/teste+31847919-6ee8-4d81-a780-098ede188128?userId=teste&token=1733871903340-86A70A32FA5D2854FC6D6EBCACB13733
+            headers:
+                Cookie: "scc:session={{ session_cookie }}"

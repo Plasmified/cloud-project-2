@@ -1,0 +1,13 @@
+config:
+    target: http://127.0.0.1:8080/tukano-blobs-1/rest
+    phases:
+        - name: login_phase
+          duration: 1
+          arrivalRate: 1
+scenarios:
+    - name: Login
+      flow:
+        - post:
+            url: /login?username=teste&password=testando
+            headers:
+                Content-Type: application/json

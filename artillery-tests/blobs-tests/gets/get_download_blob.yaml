@@ -1,0 +1,13 @@
+config:
+    target: http://127.0.0.1:8080/tukano-blobs-1/rest
+    phases:
+        - name: download_blob_phase
+          duration: 1
+          arrivalRate: 1
+scenarios:
+    - name: DownloadBlob
+      flow:
+        - get:
+            url: /blobs/teste+555682f6-4438-4982-a4e1-f2ee4e98973e?userId=teste&token=1733883519354-2AAED949B038F38FBA289D0E7CBC5B6F
+            headers:
+                Cookie: "scc:session={{ session_cookie }}"

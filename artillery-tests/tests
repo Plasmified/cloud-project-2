@@ -1,0 +1,92 @@
+============================================================================================================================================================================
+                                                                        USERS
+============================================================================================================================================================================
+
+200 OK
+artillery run ./users-tests/posts/create_user.yaml
+
+200 OK
+artillery run ./users-tests/posts/create_user2.yaml
+
+409 CONFLICT
+artillery run ./users-tests/posts/create_user.yaml
+
+200 OK
+artillery run ./users-tests/gets/get_user.yaml
+
+200 OK
+artillery run ./users-tests/gets/search_user.yaml
+
+200 OK
+artillery run ./users-tests/puts/update_user.yaml
+
+200 OK
+artillery run ./users-tests/deletes/delete_user.yaml
+
+404 NOT FOUND
+artillery run ./users-tests/gets/get_user.yaml
+
+============================================================================================================================================================================
+                                                                        SHORTS
+============================================================================================================================================================================                                                                  
+
+200 OK
+artillery run ./shorts-tests/posts/post_create_short.yaml
+
+200 OK
+artillery run ./shorts-tests/gets/get_short.yaml
+
+200 OK
+artillery run ./shorts-tests/posts/post_follow_user.yaml
+
+200 OK
+artillery run ./shorts-tests/gets/get_followers.yaml
+
+200 OK
+artillery run ./shorts-tests/gets/get_feed.yaml
+
+200 OK
+artillery run ./shorts-tests/gets/get_shorts.yaml
+
+200 OK
+artillery run ./shorts-tests/posts/post_like_post.yaml
+
+200 OK
+artillery run ./shorts-tests/gets/get_post_likes.yaml
+
+403 FORBIDDEN
+artillery run ./shorts-tests/posts/delete_short.yaml
+
+============================================================================================================================================================================
+                                                                        BLOBS
+============================================================================================================================================================================
+                                                                      
+403 FORBIDDEN
+artillery run ./blobs-tests/posts/post_upload_blob.yaml
+
+403 FORBIDDEN
+artillery run ./blobs-tests/gets/get_download_blob.yaml
+
+403 FORBIDDEN
+artillery run ./blobs-tests/deletes/delete_blob.yaml
+
+403 FORBIDDEN
+artillery run ./blobs-tests/deletes/delete_all_blobs.yaml
+
+200 OK
+artillery run ./blobs-tests/posts/post_login.yaml
+
+200 OK
+artillery run ./blobs-tests/posts/post_upload_blob.yaml
+
+200 OK
+artillery run ./blobs-tests/gets/get_download_blob.yaml
+
+200 OK
+artillery run ./blobs-tests/deletes/delete_blob.yaml
+
+200 OK
+artillery run ./blobs-tests/posts/post_upload_blob.yaml
+
+204 OK (No Content) (tbm testa o delete_all_blobs, tendo em conta que o chama)
+artillery run ./shorts-tests/posts/delete_short.yaml

@@ -1,0 +1,13 @@
+config:
+    target: http://127.0.0.1:8081/tukano-users-shorts-1/rest
+    phases:
+        - name: like_post_phase
+          duration: 1
+          arrivalRate: 1
+scenarios:
+    - name: LikePost
+      flow:
+        - post:
+            url: /shorts/POSTNAME/CR7/likes?pwd=PWDOFTHEUSERTHATLIKESTHEPOST
+            headers:
+                Content-Type: application/json
