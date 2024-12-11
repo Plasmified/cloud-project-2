@@ -1,5 +1,7 @@
 package tukano.api;
 
+import jakarta.ws.rs.core.Cookie;
+
 /**
  * Interface of blob service for storing short videos media ...
  */
@@ -19,7 +21,7 @@ public interface Blobs {
 	 *         CONFLICT if a blobId exists but bytes do not match;
 	 *         FORBIDDEN if the blobId is not valid
 	 */
-	Result<Void> upload(String blobId, byte[] bytes, String token);
+	Result<Void> upload(String blobId, String userId, byte[] bytes, String token, Cookie cookie);
 
 	/**
 	 * Downloads a short video blob resource in a single byte chunk of bytes.
@@ -28,7 +30,7 @@ public interface Blobs {
 	 * @return (OK, bytes), if the blob exists;
 	 * 			 NOT_FOUND, if no blob matches the provided blobId
 	 */
-	Result<byte[]> download(String blobId, String token);
+	Result<byte[]> download(String blobId, String userId, String token, Cookie cookie);
 
 
 	/**
@@ -38,7 +40,7 @@ public interface Blobs {
 	 * @return (OK, void), if the blob exists and was deleted;
 	 * 			 NOT_FOUND, if no blob matches the provided blobId
 	 */
-	Result<Void> delete( String blobId, String token );
+	Result<Void> delete( String blobId, String userId, String token, Cookie cookie);
 	
 
 	/**
@@ -46,5 +48,5 @@ public interface Blobs {
 	 * 
 	 * @param userid the id of the owner of the blobs;
 	 */
-	Result<Void> deleteAllBlobs( String userId, String token );
+	Result<Void> deleteAllBlobs( String userId, String token, Cookie cookie);
 }

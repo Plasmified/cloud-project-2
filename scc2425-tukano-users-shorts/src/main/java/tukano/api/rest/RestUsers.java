@@ -3,6 +3,7 @@ package tukano.api.rest;
 import java.util.List;
 
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -11,6 +12,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import tukano.api.User;
 
@@ -45,7 +47,7 @@ public interface RestUsers {
 	@DELETE
 	@Path("/{" + USER_ID+ "}")
 	@Produces(MediaType.APPLICATION_JSON)
-	User deleteUser(@PathParam(USER_ID) String userId, @QueryParam(PWD) String pwd);
+	User deleteUser(@PathParam(USER_ID) String userId, @QueryParam(PWD) String pwd, @CookieParam("scc:session") Cookie cookie);
 	
 	
 	@GET

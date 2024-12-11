@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 import org.hibernate.Session;
 
+import jakarta.ws.rs.core.Cookie;
 import tukano.api.Result;
 import tukano.api.Short;
 import tukano.api.Shorts;
@@ -72,17 +73,19 @@ public class JavaShorts implements Shorts {
 	}
 
 	
+	@SuppressWarnings("deprecation")
 	@Override
-	public Result<Void> deleteShort(String shortId, String password) {
+	public Result<Void> deleteShort(String shortId, String password, Cookie cookie) {
 		Log.info(() -> format("deleteShort : shortId = %s, pwd = %s\n", shortId, password));
 		
 		return errorOrResult( getShort(shortId), shrt -> {
 			
 			return errorOrResult( okUser( shrt.getOwnerId(), password), user -> {
 				String sId = shrt.getBlobUrl().split("\\?token=")[0];
-				var res = rbc.deleteAllBlobs(sId, Token.get(sId));
+				var res = rbc.deleteAllBlobs(sId, Token.get(sId), cookie);
+				Log.info(() -> format("COOKIE : %s", cookie.toString()));
 				Log.info(() -> format("DELETING BLOB WITH URL : %s", sId));
-				Log.info(() -> format("DELETING BLOB : %s", res.isOK()));
+				Log.info(() -> format("DELETING BLOB : %s", res));
 				return DB.transaction( hibernate -> {
 
 					hibernate.remove( shrt);
@@ -180,6 +183,7 @@ public class JavaShorts implements Shorts {
 			return error( res.error() );
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public Result<Void> deleteAllShorts(String userId, String password, String token) {
 		Log.info(() -> format("deleteAllShorts : userId = %s, password = %s, token = %s\n", userId, password, token));

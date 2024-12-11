@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+import jakarta.ws.rs.core.Cookie;
 import tukano.api.Result;
 import tukano.api.User;
 import tukano.api.Users;
@@ -67,7 +68,7 @@ public class JavaUsers implements Users {
 	}
 
 	@Override
-	public Result<User> deleteUser(String userId, String pwd) {
+	public Result<User> deleteUser(String userId, String pwd, Cookie cookie) {
 		Log.info(() -> format("deleteUser : userId = %s, pwd = %s\n", userId, pwd));
 
 		if (userId == null || pwd == null )
@@ -76,7 +77,7 @@ public class JavaUsers implements Users {
 		return errorOrResult( validatedUserOrError(DB.getOne( userId, User.class), pwd), user -> {
 			Executors.defaultThreadFactory().newThread( () -> {
 				JavaShorts.getInstance().deleteAllShorts(userId, pwd, Token.get(userId));
-				var res = rbc.deleteAllBlobs(userId, Token.get(userId));
+				var res = rbc.deleteAllBlobs(userId, Token.get(userId), cookie);
 				Log.info(() -> format("DELETING BLOB : %s", res.isOK()));
 			}).start();
 			

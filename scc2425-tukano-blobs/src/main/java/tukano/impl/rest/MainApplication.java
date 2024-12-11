@@ -4,6 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.ws.rs.core.Application;
+import tukano.auth.Authentication;
+import tukano.auth.cookies.RequestCookiesCleanupFilter;
+import tukano.auth.cookies.RequestCookiesFilter;
 import tukano.impl.Token;
 import utils.Props;
 
@@ -15,6 +18,9 @@ public class MainApplication extends Application
 	public MainApplication() {
 		Token.setSecret("supersecretni$$an");
 		resources.add(RestBlobsResource.class);
+		resources.add(RequestCookiesFilter.class);
+     	resources.add(RequestCookiesCleanupFilter.class);
+        resources.add(Authentication.class);
 		//singletons.add(new BlobsResources());
 		
 		Props.load("azurekeys-region.props"); //place the props file in resources folder under java/main

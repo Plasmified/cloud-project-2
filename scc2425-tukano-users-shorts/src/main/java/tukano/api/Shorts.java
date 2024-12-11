@@ -2,6 +2,8 @@ package tukano.api;
 
 import java.util.List;
 
+import jakarta.ws.rs.core.Cookie;
+
 /**
  * 
  * Interface for the Shorts service.
@@ -38,7 +40,7 @@ public interface Shorts {
 	 * 	NOT_FOUND if shortId does not match an existing short
 	 * 	FORBIDDEN, if the password is not correct;
 	 */
-	Result<Void> deleteShort(String shortId, String password);
+	Result<Void> deleteShort(String shortId, String password, Cookie cookie);
 	
 	
 	/**
