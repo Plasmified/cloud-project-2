@@ -8,6 +8,6 @@ scenarios:
     - name: GetFollowers
       flow:
         - get:
-            url: /shorts/teste/followers?pwd=sui
+            url: /shorts/CR7/followers?pwd=sui
             headers:
                 Content-Type: application/json

@@ -3,23 +3,12 @@ config:
     phases:
         - name: simple_put
           duration: 1
-          arrivalRate: 3
-    payload:
-        path: ./data/users.csv
-        order: sequence
-        skipHeader: true
-        delimiter: ","
-        skipEmptyLines: true
-        fields:
-            - "userId"
-            - "pwd"
-            - "email"
-            - "displayName"
+          arrivalRate: 1
 scenarios:
     - name: TuKanoUpdate
       flow:
         - put:
-            url: /users/{{ userId }}?pwd={{ pwd }}
+            url: /users/teste?pwd=testando
             headers:
                 Content-Type: application/json
             json:

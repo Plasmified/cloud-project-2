@@ -8,6 +8,6 @@ scenarios:
     - name: GetFeed
       flow:
         - get:
-            url: /shorts/USERID/feed?pwd=PWD
+            url: /shorts/teste/feed?pwd=testando
             headers:
                 Content-Type: application/json
